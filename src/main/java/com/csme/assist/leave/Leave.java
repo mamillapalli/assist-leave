@@ -18,6 +18,10 @@ public class Leave {
     @GeneratedValue
     @Column(name="LEAVE_ID")
     private int id;
+    @Column(name = "NAME")
+    private String name;
+    @Column (name ="DESCRIPTION")
+    private String description;
     @Column(name = "START_DATE")
     private Date startDate;
     @Column (name = "END_DATE")
@@ -38,5 +42,9 @@ public class Leave {
     private boolean ticketsPaid;
     @Column (name = "TICKETS_TO")
     private String ticketsTo;
+    @Column (name = "STATUS")
+    private String status;
+    @Column(name="APPROVER_COMMENTS")
+    private String approverComments;
 
 }
