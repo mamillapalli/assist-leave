@@ -10,9 +10,13 @@ import java.util.Optional;
 @Repository
 public interface ResourceApproverMappingRepository extends JpaRepository<ResourceApproverMapping, Integer> {
 
-    Optional<List<ResourceApproverMapping>> findByResourceId(int id);
+    Optional <ResourceApproverMapping> findByResourceId(int id);
 
-    Optional<List<ResourceApproverMapping>> findByApproverId(int id);
+    Optional <List<ResourceApproverMapping>> findByApproverId(int id);
+
+    void deleteByResourceId(int id);
+
+    void deleteByApproverId(int id);
 }
 
 
