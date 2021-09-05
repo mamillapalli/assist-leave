@@ -35,6 +35,15 @@ public class LeaveController {
         return all;
     }
 
+
+    @GetMapping (path = "/leaves/{id}")
+    public Optional<Leave> getLeaves(@PathVariable int id)
+    {
+
+        Optional<Leave> leave = leaveRepository.findById(id);
+        return leave;
+    }
+
     @GetMapping (path = "/getNumberOfWorkingDays/from/{startDate}/to/{endDate}")
     public int getNumberOfWorkingDays(@PathVariable (name="startDate") String start, @PathVariable (name="endDate") String end) throws ParseException {
 
@@ -73,8 +82,7 @@ public class LeaveController {
     }
 
     @PostMapping(path = "/leaves")
-    public Leave addLeave( @Valid @RequestBody Leave leave)
-    {
+    public Leave addLeave( @Valid @RequestBody Leave leave) throws Exception {
         logger.info("in add Leave");
         Leave save = leaveRepository.save(leave);
         return save;
@@ -101,6 +109,24 @@ public class LeaveController {
         leave.setNumberOfDays(leaveDetails.getNumberOfDays());
         leave.setPayPercentage(leaveDetails.getPayPercentage());
         leave.setTicketsPaid(leaveDetails.isTicketsPaid());
+        final Leave updatedLeave = leaveRepository.save(leave);
+        return ResponseEntity.ok(updatedLeave);
+    }
+
+    @PutMapping(path = "/approveleaves/{id}")
+    public ResponseEntity<Leave> approveLeave(@Valid @RequestBody Leave leaveDetails, @PathVariable int id)
+    {
+        logger.info("in update Leave");
+/*        if(leaveRepository.getById(id)!=null) {
+            leave.setId(id);
+            Leave save = leaveRepository.save(leave);
+            return save;
+        }
+        return new ResourceNotFoundException("Leave with id " + id + " does not exist");*/
+
+        Leave leave = leaveRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + id + " not found"));
+        leave.setStatus(leaveDetails.getStatus());
+        leave.setApproverComments(leaveDetails.getApproverComments());
         final Leave updatedLeave = leaveRepository.save(leave);
         return ResponseEntity.ok(updatedLeave);
     }
