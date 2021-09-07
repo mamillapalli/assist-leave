@@ -42,7 +42,7 @@ public class ResourceApproverMappingController {
 
     //Modify resources for a given approver Id
 
-    @PostMapping(path = "/modifyApproverForResources")
+    @PutMapping(path = "/modifyApproverForResources")
     @Transactional
     public List<ResourceApproverMapping> modifyApproverForResources(@RequestBody List<ResourceApproverMapping> resourceApproverMappings)
     {
@@ -62,7 +62,7 @@ public class ResourceApproverMappingController {
 
 
     // Get Resources with a given Approver Id controller
-    @GetMapping(path = "/getApproverForResource/{resourceId}")
+    @GetMapping(path = "/getResourcesForApprover/{approverId}")
     public Optional<List<ResourceApproverMapping>> getResourcesForApprover(@PathVariable int approverId)
     {
         return resourceApproverMappingRepository.findByApproverId(approverId);

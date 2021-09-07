@@ -2,16 +2,14 @@ package com.csme.assist.leave;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Table (name = "LEAVE_TABLE")
 public class Leave {
 
     @Id

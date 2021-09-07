@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "RESOURCE_APPROVER_MAPPING")
+@Table(name = "RESOURCE_APPROVER_MAPPING_TABLE")
 public class ResourceApproverMapping {
 
     @Id
