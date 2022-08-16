@@ -1,5 +1,6 @@
-package com.csme.assist.leave;
+package com.csme.assist.leave.repository;
 
+import com.csme.assist.leave.entity.Leave;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,8 @@ public interface LeaveRepository extends JpaRepository<Leave, Integer> {
     Optional<List<Leave>> findByResourceId(int id);
 
     Optional<List<Leave>> findByApproverId(int id);
+
+
 }
 
 

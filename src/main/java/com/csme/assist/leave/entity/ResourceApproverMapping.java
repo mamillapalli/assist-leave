@@ -1,4 +1,4 @@
-package com.csme.assist.leave;
+package com.csme.assist.leave.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

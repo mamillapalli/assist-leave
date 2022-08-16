@@ -1,5 +1,7 @@
-package com.csme.assist.leave;
+package com.csme.assist.leave.controller;
 
+import com.csme.assist.leave.entity.ResourceApproverMapping;
+import com.csme.assist.leave.repository.ResourceApproverMappingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

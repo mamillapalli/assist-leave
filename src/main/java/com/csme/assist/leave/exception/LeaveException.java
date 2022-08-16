@@ -1,4 +1,4 @@
-package com.csme.assist.leave;
+package com.csme.assist.leave.exception;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;

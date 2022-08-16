@@ -1,19 +1,21 @@
-package com.csme.assist.leave;
+package com.csme.assist.leave.entity;
 
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
+
+
 @Entity
+@Table(name = "LEAVE_TABLE", schema = "ADMIN")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@Table (name = "LEAVE_TABLE")
-public class Leave {
-
+@Getter
+@Setter
+public class  Leave extends Base {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name="LEAVE_ID")
     private int id;
     @Column(name = "NAME")
@@ -44,5 +46,7 @@ public class Leave {
     private String status;
     @Column(name="APPROVER_COMMENTS")
     private String approverComments;
+    @Column(name = "DELETE_FLAG")
+    private boolean deleteFlag;
 
 }
