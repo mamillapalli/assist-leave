@@ -1,10 +1,13 @@
 package com.csme.assist.leave.service;
 
 import com.csme.assist.leave.entity.Leave;
+import com.csme.assist.leave.entity.StatusEnum;
+import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.csme.assist.leave.jwtauthentication.configuration.service.JWTUtil;
 import com.csme.assist.leave.model.LeaveDTO;
 import com.csme.assist.leave.repository.LeaveRepository;
 import com.csme.assist.leave.repository.ResourceRepository;
+import jdk.jshell.Snippet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -42,18 +45,27 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public LeaveDTO getLeavesByResourceId(int id) {
-        return leaveMapper.leaveToLeaveDTO((Leave) leaveRepository.findByResourceId(id).orElseThrow(() -> new ResourceNotFoundException("Resource with id " + id + " not found")));
+    public List<LeaveDTO> getLeavesByResourceId(int id) {
+        return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByResourceId(id).orElseThrow(() -> new ResourceNotFoundException("Resource with id " + id + " not found")));
     }
 
     @Override
-    public LeaveDTO getLeavesByApproverId(int id) {
-        return leaveMapper.leaveToLeaveDTO((Leave) leaveRepository.findByApproverId(id).orElseThrow(() -> new ResourceNotFoundException("Resource with id " + id + " not found")));
+    public List<LeaveDTO> getLeavesByApproverId(int id) {
+        return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByApproverId(id).orElseThrow(() -> new ResourceNotFoundException("Approver with id " + id + " not found")));
+    }
+
+    @Override
+    public List<LeaveDTO> getLeavesByApproverIdAndStatus(int id,StatusEnum status) {
+        System.out.println("id is :"+id);
+        System.out.println("status is :"+status);
+        return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByApproverIdAndStatus(id,status).orElseThrow(() -> new ResourceNotFoundException("Approver with id " + id + " not found")));
     }
 
     @Override
     public LeaveDTO addLeave(LeaveDTO leaveDTO) {
         Leave leave = leaveMapper.leaveDTOToLeave(leaveDTO);
+        leave.setStatus(StatusEnum.WAITING);
+        leave.setTransactionStatus(TransactionStatusEnum.PENDING);
         leave.setCreationDetails(jwtUtil.extractUsernameFromRequest());
         return leaveMapper.leaveToLeaveDTO(leaveRepository.save(leave));
     }
@@ -64,7 +76,8 @@ public class LeaveServiceImpl implements LeaveService {
         Leave leave = leaveRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + userId + " not found"));
         leave.setApproverId(leaveDTO.getApproverId());
         leave.setContactAddress(leaveDTO.getContactAddress());
-        leave.setStatus(leaveDTO.getStatus());
+        leave.setStatus(StatusEnum.WAITING);
+        leave.setTransactionStatus(TransactionStatusEnum.PENDING);
         leave.setContactPhone(leaveDTO.getContactPhone());
         leave.setEndDate(leaveDTO.getEndDate());
         leave.setStartDate(leaveDTO.getStartDate());
@@ -81,10 +94,22 @@ public class LeaveServiceImpl implements LeaveService {
         if(leaveRepository.findById(userId).isEmpty()) throw new RuntimeException("Leave with id " + userId + " does not exist");
         Leave existingUserDetails = leaveRepository.findById(userId).get();
         existingUserDetails.setAuthorizationDetails(jwtUtil.extractUsernameFromRequest());
+        existingUserDetails.setStatus(StatusEnum.APPROVED);
+        existingUserDetails.setTransactionStatus(TransactionStatusEnum.MASTER);
         Leave savedUser = leaveRepository.save(existingUserDetails);
-        if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
+       if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
         return leaveMapper.leaveToLeaveDTO(savedUser);
     }
+
+//    @Override
+//    public List<LeaveDTO> getPendingLeavesByApproverId(int id) {
+//        List<Leave> leaves = leaveRepository.findByPendingApproverId(id,TransactionStatusEnum.PENDING);
+//        if(leaves.size()==0) throw new RuntimeException("No pending customers exists in the system");
+//        List<LeaveDTO> leaveDTOS = new ArrayList<>();
+//        leaves.forEach((leave) -> leaveDTOS.add(leaveMapper.leaveToLeaveDTO(leave)));
+//        return leaveDTOS;
+//    }
+
 
 
 }

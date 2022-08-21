@@ -11,9 +11,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "RESOURCE_APPROVER_MAPPING_TABLE")
+@Table(name = "RESOURCE_APPROVER_MAPPING_TABLE" , schema = "PUBLIC")
 public class ResourceApproverMapping {
-
     @Id
     @GeneratedValue
     @Column(name="RESOURCE_APPROVER_MAPPING_ID")

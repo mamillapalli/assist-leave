@@ -1,5 +1,6 @@
 package com.csme.assist.leave.entity;
 
+import jdk.jshell.Snippet;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,7 +9,7 @@ import java.util.Date;
 
 
 @Entity
-@Table(name = "LEAVE_TABLE", schema = "ADMIN")
+@Table(name = "LEAVE_TABLE", schema = "PUBLIC")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -43,7 +44,8 @@ public class  Leave extends Base {
     @Column (name = "TICKETS_TO")
     private String ticketsTo;
     @Column (name = "STATUS")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status;
     @Column(name="APPROVER_COMMENTS")
     private String approverComments;
     @Column(name = "DELETE_FLAG")

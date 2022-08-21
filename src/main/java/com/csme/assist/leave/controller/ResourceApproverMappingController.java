@@ -56,7 +56,7 @@ public class ResourceApproverMappingController {
 
 
     //Get Approver for resource controller
-    @GetMapping(path = "/getApproverForResource/{resourceId}")
+        @GetMapping(path = "/getApproverForResource/{resourceId}")
     public Optional<ResourceApproverMapping> getApproverForResource(@PathVariable int resourceId)
     {
         return resourceApproverMappingRepository.findByResourceId(resourceId);

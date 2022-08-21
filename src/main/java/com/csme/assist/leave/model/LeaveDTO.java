@@ -1,5 +1,7 @@
 package com.csme.assist.leave.model;
 
+import com.csme.assist.leave.entity.StatusEnum;
+import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,7 +28,8 @@ public class LeaveDTO {
     private String contactPhone;
     private boolean ticketsPaid;
     private String ticketsTo;
-    private String status;
+    private StatusEnum status;
     private String approverComments;
     private boolean deleteFlag;
+    private TransactionStatusEnum transactionStatus;
 }
