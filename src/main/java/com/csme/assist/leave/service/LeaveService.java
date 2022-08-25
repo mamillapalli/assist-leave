@@ -23,5 +23,7 @@ public interface LeaveService {
 
     LeaveDTO approveLeave(int id);
 
+    LeaveDTO rejectLeave(int id);
+
     List<LeaveDTO> getLeavesByApproverIdAndStatus(int id, StatusEnum status);
 }

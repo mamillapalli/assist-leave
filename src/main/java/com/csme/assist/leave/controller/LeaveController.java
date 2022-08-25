@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
@@ -109,6 +107,14 @@ public class LeaveController {
     public ResponseEntity<LeaveDTO> approveLeave(@PathVariable (name = "id") int id)
     {
         LeaveDTO leaveDTO = leaveService.approveLeave(id);
+        return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
+    }
+
+    @CrossOrigin(origins = "http://localhost:8001/rejectleaves/{id}")
+    @PutMapping(path = "/rejectleaves/{id}")
+    public ResponseEntity<LeaveDTO> rejectLeave(@PathVariable (name = "id") int id)
+    {
+        LeaveDTO leaveDTO = leaveService.rejectLeave(id);
         return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
     }
 
