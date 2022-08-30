@@ -23,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -60,7 +61,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins(String.valueOf(Arrays.asList(corsAllowedUrls.split(";"))));
+               // registry.addMapping("/**").allowedOrigins(String.valueOf(Arrays.asList(corsAllowedUrls.split(";"))));
+                registry.addMapping("/**").allowedOrigins("http://localhost:8080").allowedMethods("*");
             }
         };
     }
@@ -71,7 +73,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        configuration.setAllowedOrigins(Arrays.asList(corsAllowedUrls.split(";")));
+        configuration.setAllowedOrigins(Collections.singletonList(corsAllowedUrls));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(List.of("jwt"));
@@ -84,16 +86,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
 
-/*        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
         corsConfiguration.setAllowedOrigins(Collections.singletonList(corsAllowedUrls));
+        //corsConfiguration.addAllowedOrigin("*");
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setExposedHeaders(List.of("jwt"));*/
+        corsConfiguration.setExposedHeaders(List.of("jwt"));
 
 
-        //httpSecurity.csrf().disable().cors().configurationSource(request -> corsConfiguration).and()
-        httpSecurity.csrf().disable().cors().and()
+        httpSecurity.csrf().disable().cors().configurationSource(request -> corsConfiguration).and()
+        //httpSecurity.csrf().disable().cors().and()
                 .authorizeRequests().antMatchers("/authenticate").permitAll().
                 anyRequest().authenticated().and().
                 exceptionHandling().and().sessionManagement()
