@@ -45,6 +45,14 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
+    public List<LeaveDTO> getLeavesByTransactionStatus(TransactionStatusEnum transactionStatus) {
+        List<Leave> leave = leaveRepository.findByTransactionStatus(transactionStatus);
+        if(leave.size()==0) throw new RuntimeException("There are no pending leave request currently in the system");
+        return leaveMapper.leaveToLeaveDTOs(leave);
+    }
+
+
+    @Override
     public List<LeaveDTO> getLeavesByResourceId(int id) {
         return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByResourceId(id).orElseThrow(() -> new ResourceNotFoundException("Resource with id " + id + " not found")));
     }
@@ -89,20 +97,22 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public LeaveDTO approveLeave(int userId)
+    public LeaveDTO approveLeave(int userId, LeaveDTO leaveDTO)
     {
         if(leaveRepository.findById(userId).isEmpty()) throw new RuntimeException("Leave with id " + userId + " does not exist");
         Leave existingUserDetails = leaveRepository.findById(userId).get();
         existingUserDetails.setAuthorizationDetails(jwtUtil.extractUsernameFromRequest());
         existingUserDetails.setStatus(StatusEnum.APPROVED);
         existingUserDetails.setTransactionStatus(TransactionStatusEnum.MASTER);
+        existingUserDetails.setApproverId(jwtUtil.extractUsernameFromRequest());
+        existingUserDetails.setApproverComments(leaveDTO.getApproverComments());
         Leave savedUser = leaveRepository.save(existingUserDetails);
        if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
         return leaveMapper.leaveToLeaveDTO(savedUser);
     }
 
     @Override
-    public LeaveDTO rejectLeave(int userId)
+    public LeaveDTO rejectLeave(int userId, LeaveDTO leaveDTO)
     {
         if(leaveRepository.findById(userId).isEmpty())
             throw new RuntimeException("Reject Leave with id " + userId + " does not exist");
@@ -110,6 +120,7 @@ public class LeaveServiceImpl implements LeaveService {
         existingUserDetails.setAuthorizationDetails(jwtUtil.extractUsernameFromRequest());
         existingUserDetails.setStatus(StatusEnum.REJECTED);
         existingUserDetails.setTransactionStatus(TransactionStatusEnum.PENDING);
+        existingUserDetails.setApproverComments(leaveDTO.getApproverComments());
         Leave savedUser = leaveRepository.save(existingUserDetails);
         if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
         return leaveMapper.leaveToLeaveDTO(savedUser);

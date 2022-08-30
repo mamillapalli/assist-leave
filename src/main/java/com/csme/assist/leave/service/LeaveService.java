@@ -13,17 +13,19 @@ public interface LeaveService {
 
     LeaveDTO getLeaves(int id);
 
+    List<LeaveDTO> getLeavesByTransactionStatus(TransactionStatusEnum transactionStatus);
+
     List<LeaveDTO> getLeavesByResourceId(int id);
 
     List<LeaveDTO> getLeavesByApproverId(int id);
 
      LeaveDTO addLeave(LeaveDTO leaveDTO);
 
-    LeaveDTO updateLeave(int id , LeaveDTO roleDTO);
+    LeaveDTO updateLeave(int id , LeaveDTO leaveDTO);
 
-    LeaveDTO approveLeave(int id);
+    LeaveDTO approveLeave(int id,LeaveDTO leaveDTO);
 
-    LeaveDTO rejectLeave(int id);
+    LeaveDTO rejectLeave(int id,LeaveDTO leaveDTO);
 
     List<LeaveDTO> getLeavesByApproverIdAndStatus(int id, StatusEnum status);
 }

@@ -66,6 +66,14 @@ public class LeaveController {
     }
 
     @CrossOrigin(origins = "http://localhost:8001")
+    @GetMapping (path = "/leavesstatus/{TRANSACTIONSTATUS}")
+    public ResponseEntity<List<LeaveDTO>> getLeavesByStatus(@PathVariable (name = "TRANSACTIONSTATUS") TransactionStatusEnum transactionStatus)
+    {
+        List<LeaveDTO> leaveDTO = leaveService.getLeavesByTransactionStatus(transactionStatus);
+        return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
+    }
+
+    @CrossOrigin(origins = "http://localhost:8001")
     @GetMapping (path = "/leavesByResourceId/{id}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByResourceId( @PathVariable (name = "id") int id)
     {
@@ -104,17 +112,17 @@ public class LeaveController {
 
     @CrossOrigin(origins = "http://localhost:8001/approveleaves/{id}")
     @PutMapping(path = "/approveleaves/{id}")
-    public ResponseEntity<LeaveDTO> approveLeave(@PathVariable (name = "id") int id)
+    public ResponseEntity<LeaveDTO> approveLeave(@Valid @RequestBody LeaveDTO leaveDTO,@PathVariable (name = "id") int id)
     {
-        LeaveDTO leaveDTO = leaveService.approveLeave(id);
-        return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
+        LeaveDTO leaveDTOs = leaveService.approveLeave(id,leaveDTO);
+        return new ResponseEntity<>(leaveDTOs, HttpStatus.OK);
     }
 
     @CrossOrigin(origins = "http://localhost:8001/rejectleaves/{id}")
     @PutMapping(path = "/rejectleaves/{id}")
-    public ResponseEntity<LeaveDTO> rejectLeave(@PathVariable (name = "id") int id)
+    public ResponseEntity<LeaveDTO> rejectLeave(@Valid @RequestBody LeaveDTO leaveDTO,@PathVariable (name = "id") int id)
     {
-        LeaveDTO leaveDTO = leaveService.rejectLeave(id);
+        LeaveDTO leaveDTOs = leaveService.rejectLeave(id,leaveDTO);
         return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
     }
 

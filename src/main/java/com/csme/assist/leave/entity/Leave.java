@@ -32,9 +32,9 @@ public class  Leave extends Base {
     @Column (name = "PAY_PERCENTAGE")
     private int payPercentage;
     @Column(name = "RESOURCE_ID")
-    private int resourceId;
+    private String resourceId;
     @Column (name = "APPROVER_ID")
-    private int approverId;
+    private String approverId;
     @Column (name = "CONTACT_ADDRESS")
     private String contactAddress;
     @Column (name = "CONTACT_PHONE")

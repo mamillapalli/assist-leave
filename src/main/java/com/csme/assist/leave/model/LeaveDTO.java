@@ -22,8 +22,8 @@ public class LeaveDTO {
     private Date endDate;
     private int numberOfDays;
     private int payPercentage;
-    private int resourceId;
-    private int approverId;
+    private String resourceId;
+    private String approverId;
     private String contactAddress;
     private String contactPhone;
     private boolean ticketsPaid;
