@@ -57,7 +57,7 @@ public class LeaveController {
         return new ResponseEntity<>(leaveService.getAll(), HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:8001")
+
     @GetMapping (path = "/leaves/{id}")
     public ResponseEntity<LeaveDTO> getLeaves(@PathVariable (name = "id") int id)
     {
@@ -65,7 +65,7 @@ public class LeaveController {
         return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:8001")
+
     @GetMapping (path = "/leavesstatus/{TRANSACTIONSTATUS}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByStatus(@PathVariable (name = "TRANSACTIONSTATUS") TransactionStatusEnum transactionStatus)
     {
@@ -73,7 +73,7 @@ public class LeaveController {
         return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:8001")
+
     @GetMapping (path = "/leavesByResourceId/{id}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByResourceId( @PathVariable (name = "id") String id)
     {
@@ -81,7 +81,7 @@ public class LeaveController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:8001")
+
     @GetMapping (path = "/leavesByResourceId/{id}/{TRANSACTIONSTATUS}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByResourceIdAndStatus( @PathVariable (name = "id") String id, @PathVariable (name = "TRANSACTIONSTATUS") TransactionStatusEnum status)
     {
@@ -89,14 +89,14 @@ public class LeaveController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:8001")
+
     @GetMapping (path = "/leavesByApproverId/{id}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByApproverId( @PathVariable (name = "id") String id)
     {
         return new ResponseEntity<>(leaveService.getLeavesByApproverId(id), HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:8001")
+
     @GetMapping (path = "/leavesByApproverId/{id}/{STATUS}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByApproverIdAndStatus( @PathVariable (name = "id") String id, @PathVariable (name = "STATUS") StatusEnum status)
     {
@@ -105,13 +105,13 @@ public class LeaveController {
         return new ResponseEntity<>(leaveService.getLeavesByApproverIdAndStatus(id,status), HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:8001")
+
     @PostMapping(path = "/leaves")
     public ResponseEntity<LeaveDTO> addLeave(@Valid @RequestBody LeaveDTO leaveDTO) throws Exception {
         return new ResponseEntity<>(leaveService.addLeave(leaveDTO),HttpStatus.ACCEPTED);
     }
 
-    @CrossOrigin(origins = "http://localhost:8001")
+
     @PutMapping(path = "/leaves/{id}")
     public ResponseEntity<LeaveDTO> updateLeave(@Valid @RequestBody LeaveDTO leaveDTO, @PathVariable (name = "id") int id)
     {
