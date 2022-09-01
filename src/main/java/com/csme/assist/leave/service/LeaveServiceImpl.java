@@ -46,7 +46,13 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public List<LeaveDTO> getLeavesByTransactionStatus(TransactionStatusEnum transactionStatus) {
-        List<Leave> leave = leaveRepository.findByTransactionStatus(transactionStatus);
+        String emailAddress = jwtUtil.extractUsernameFromRequest();
+        List<Leave> leave = null;
+        if(emailAddress != null){
+            leave = leaveRepository.findByTransactionStatusAndResourceIdNot(transactionStatus,emailAddress);
+        } else {
+            leave = leaveRepository.findByTransactionStatus(transactionStatus);
+        }
         if(leave.size()==0) throw new RuntimeException("There are no pending leave request currently in the system");
         return leaveMapper.leaveToLeaveDTOs(leave);
     }
@@ -58,12 +64,13 @@ public class LeaveServiceImpl implements LeaveService {
         System.out.println("roles is :"+jwtUtil.extractRolesFromRequest());
         String rolesValue = jwtUtil.extractRolesFromRequest();
         List<String> list = Arrays.asList(rolesValue.split(","));
-        if (list.contains("LEAVE_ADMIN") || list.contains("LEAVE_APPROVER")) {
-            leave = leaveRepository.findByResourceIdOrTransactionStatus(id,TransactionStatusEnum.PENDING);
-        } else {
-            leave = leaveRepository.findByResourceId(id);
-
-        }
+//        if (list.contains("LEAVE_ADMIN") || list.contains("LEAVE_APPROVER")) {
+//            leave = leaveRepository.findByResourceIdOrTransactionStatus(id,TransactionStatusEnum.PENDING);
+//        } else {
+//            leave = leaveRepository.findByResourceId(id);
+//
+//        }
+        leave = leaveRepository.findByResourceId(id);
         if (leave.size()==0)
             throw new RuntimeException("Leave with resource " + id + " does not exist");
         return leaveMapper.leaveToLeaveDTOs(leave);

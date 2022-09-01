@@ -118,7 +118,7 @@ public class LeaveController {
         return new ResponseEntity<>(leaveService.updateLeave(id,leaveDTO),HttpStatus.ACCEPTED);
     }
 
-    @CrossOrigin(origins = "http://localhost:8001/approveleaves/{id}")
+
     @PutMapping(path = "/approveleaves/{id}")
     public ResponseEntity<LeaveDTO> approveLeave(@Valid @RequestBody LeaveDTO leaveDTO,@PathVariable (name = "id") int id)
     {
@@ -126,7 +126,7 @@ public class LeaveController {
         return new ResponseEntity<>(leaveDTOs, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:8001/rejectleaves/{id}")
+
     @PutMapping(path = "/rejectleaves/{id}")
     public ResponseEntity<LeaveDTO> rejectLeave(@Valid @RequestBody LeaveDTO leaveDTO,@PathVariable (name = "id") int id)
     {
@@ -134,7 +134,7 @@ public class LeaveController {
         return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:8001/profile")
+
     @GetMapping (path = "/profile")
     public Optional<Resource> getProfile()
     {

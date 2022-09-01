@@ -24,6 +24,8 @@ public interface LeaveRepository extends JpaRepository<Leave, Integer> {
     Optional<List<Leave>> findByApproverId(String id);
 
     Optional<List<Leave>> findByApproverIdAndStatus(String id, StatusEnum status);
+
+    List<Leave> findByTransactionStatusAndResourceIdNot(TransactionStatusEnum status,String id);
 }
 
 
