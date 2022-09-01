@@ -3,6 +3,7 @@ package com.csme.assist.leave.jwtauthentication.configuration.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,27 +23,11 @@ import java.util.function.Function;
 
 @Service
 @Profile("JWT")
+@Slf4j
 public class JWTUtil {
 
     @Autowired
     RSAUtil rsaUtil;
-
-    public String extractUsernameFromRequest() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-
-        try {
-            String authorizationHeader = request.getHeader("Authorization");
-            String jwtToken =  authorizationHeader.substring(7);
-            return extractClaim(jwtToken, Claims::getSubject, rsaUtil.getPublicKey());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
 
 
@@ -67,14 +52,24 @@ public class JWTUtil {
     }
 
     public String generateToken(UserDetails userDetails, PrivateKey privateKey) {
+//        Map<String, Object> claims = new HashMap<>();
+//        return createToken(claims, userDetails.getUsername(),privateKey);
+
         Map<String, Object> claims = new HashMap<>();
+        StringBuffer userRoles= new StringBuffer();
+        userDetails.getAuthorities().stream().forEach(grantedAuthority -> {
+            log.info("authority of the user " + grantedAuthority.getAuthority());
+            userRoles.append(grantedAuthority.getAuthority()).append(",");
+        });
+        if(userRoles.length()>0) userRoles.deleteCharAt(userRoles.length()-1);
+        claims.put("roles",userRoles);
         return createToken(claims, userDetails.getUsername(),privateKey);
     }
 
     private String createToken(Map<String, Object> claims, String subject, PrivateKey privateKey) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 100*100))
                 .signWith(SignatureAlgorithm.RS512, privateKey).compact();
     }
 
@@ -82,5 +77,43 @@ public class JWTUtil {
         final String username = extractUsername(token, publicKey);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token,publicKey));
     }
+
+    public String extractUsernameFromRequest() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
+        try {
+            String authorizationHeader = request.getHeader("Authorization");
+            String jwtToken =  authorizationHeader.substring(7);
+            return extractClaim(jwtToken, Claims::getSubject, rsaUtil.getPublicKey());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String extractRolesFromRequest() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        Claims c = null;
+        String s = null;
+        try {
+            String authorizationHeader = request.getHeader("Authorization");
+            String jwtToken =  authorizationHeader.substring(7);
+            c =  extractAllClaims(jwtToken, rsaUtil.getPublicKey());
+            s = (String) c.get("roles");
+            System.out.println("roles request : "+s);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
 
 }

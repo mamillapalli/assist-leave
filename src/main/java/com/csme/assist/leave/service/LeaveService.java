@@ -15,9 +15,11 @@ public interface LeaveService {
 
     List<LeaveDTO> getLeavesByTransactionStatus(TransactionStatusEnum transactionStatus);
 
-    List<LeaveDTO> getLeavesByResourceId(int id);
+    List<LeaveDTO> getLeavesByResourceId(String id);
 
-    List<LeaveDTO> getLeavesByApproverId(int id);
+    List<LeaveDTO> getLeavesByResourceIdAndStatus(String id,TransactionStatusEnum transactionStatus);
+
+    List<LeaveDTO> getLeavesByApproverId(String id);
 
      LeaveDTO addLeave(LeaveDTO leaveDTO);
 
@@ -27,5 +29,5 @@ public interface LeaveService {
 
     LeaveDTO rejectLeave(int id,LeaveDTO leaveDTO);
 
-    List<LeaveDTO> getLeavesByApproverIdAndStatus(int id, StatusEnum status);
+    List<LeaveDTO> getLeavesByApproverIdAndStatus(String id, StatusEnum status);
 }

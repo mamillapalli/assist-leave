@@ -53,17 +53,38 @@ public class LeaveServiceImpl implements LeaveService {
 
 
     @Override
-    public List<LeaveDTO> getLeavesByResourceId(int id) {
-        return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByResourceId(id).orElseThrow(() -> new ResourceNotFoundException("Resource with id " + id + " not found")));
+    public List<LeaveDTO> getLeavesByResourceId(String id) {
+        List<Leave> leave = null;
+        System.out.println("roles is :"+jwtUtil.extractRolesFromRequest());
+        String rolesValue = jwtUtil.extractRolesFromRequest();
+        List<String> list = Arrays.asList(rolesValue.split(","));
+        if (list.contains("LEAVE_ADMIN") || list.contains("LEAVE_APPROVER")) {
+            leave = leaveRepository.findByResourceIdOrTransactionStatus(id,TransactionStatusEnum.PENDING);
+        } else {
+            leave = leaveRepository.findByResourceId(id);
+
+        }
+        if (leave.size()==0)
+            throw new RuntimeException("Leave with resource " + id + " does not exist");
+        return leaveMapper.leaveToLeaveDTOs(leave);
+
+        //return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByResourceId(id).orElseThrow(() -> new ResourceNotFoundException("Resource with id " + id + " not found")));
     }
 
     @Override
-    public List<LeaveDTO> getLeavesByApproverId(int id) {
+    public List<LeaveDTO> getLeavesByResourceIdAndStatus(String id,TransactionStatusEnum transactionStatus) {
+        List<Leave> leave = leaveRepository.findByResourceIdAndTransactionStatus(id,transactionStatus);
+        if(leave.size()==0) throw new RuntimeException("There are no pending leave request currently in the system");
+        return leaveMapper.leaveToLeaveDTOs(leave);
+    }
+
+    @Override
+    public List<LeaveDTO> getLeavesByApproverId(String id) {
         return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByApproverId(id).orElseThrow(() -> new ResourceNotFoundException("Approver with id " + id + " not found")));
     }
 
     @Override
-    public List<LeaveDTO> getLeavesByApproverIdAndStatus(int id,StatusEnum status) {
+    public List<LeaveDTO> getLeavesByApproverIdAndStatus(String id,StatusEnum status) {
         System.out.println("id is :"+id);
         System.out.println("status is :"+status);
         return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByApproverIdAndStatus(id,status).orElseThrow(() -> new ResourceNotFoundException("Approver with id " + id + " not found")));
