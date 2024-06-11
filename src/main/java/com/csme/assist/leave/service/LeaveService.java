@@ -4,6 +4,8 @@ package com.csme.assist.leave.service;
 import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.csme.assist.leave.model.LeaveDTO;
+
+import java.util.Date;
 import java.util.List;
 
 
@@ -23,6 +25,7 @@ public interface LeaveService {
     LeaveDTO addLeave(LeaveDTO leaveDTO);
 
     LeaveDTO updateLeave(int id , LeaveDTO leaveDTO);
+    
     void deleteLeave(int id);
 
     LeaveDTO approveLeave(int id,LeaveDTO leaveDTO);
@@ -30,4 +33,6 @@ public interface LeaveService {
     LeaveDTO rejectLeave(int id,LeaveDTO leaveDTO);
 
     List<LeaveDTO> getLeavesByApproverIdAndStatus(String id, StatusEnum status);
+
+    Integer calculateDays(Date startDate, Date endDate);
 }

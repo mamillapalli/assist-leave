@@ -9,10 +9,11 @@ import com.csme.assist.leave.model.LeaveDTO;
 import com.csme.assist.leave.repository.DeletedLeavesRepository;
 import com.csme.assist.leave.repository.LeaveRepository;
 import com.csme.assist.leave.repository.ResourceRepository;
-import jdk.jshell.Snippet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 import com.csme.assist.leave.mapper.LeaveMapper;
 
@@ -36,6 +37,13 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Autowired
     JWTUtil jwtUtil;
+
+    @Value("${leave.weekends}")
+    String weekends;
+    @Value("${leave.addHolidaysToLeave}")
+    boolean addHolidaysToLeave;
+    @Value("${leave.max-no-of-holidays}")
+    int maxNoOfHolidays;
 
     @Override
     public List<LeaveDTO> getAll() {
@@ -130,14 +138,14 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public void deleteLeave(int userId)
+    public void deleteLeave(int id)
     {
-        leaveRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + userId + " not found"));
-        Leave leave = leaveRepository.findById(userId).get();
+        leaveRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + id + " not found"));
+        Leave leave = leaveRepository.findById(id).get();
         //saving the deleted leave in to DELETED_LEAVE_TABLE and deleting the entry from LEAVE_TABLE.
         //TODO: need to check if typecasting works   
         deletedLeaveRepository.save((DeletedLeave)leave);
-        leaveRepository.deleteById(userId);
+        leaveRepository.deleteById(id);
     }
 
     @Override
@@ -168,6 +176,11 @@ public class LeaveServiceImpl implements LeaveService {
         Leave savedUser = leaveRepository.save(existingUserDetails);
         if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
         return leaveMapper.leaveToLeaveDTO(savedUser);
+    }
+
+    @Override
+    public Integer calculateDays(Date startDate, Date endDate) {
+        return 0;
     }
 
 //    @Override
