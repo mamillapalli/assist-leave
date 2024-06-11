@@ -20,10 +20,10 @@ public interface LeaveService {
     List<LeaveDTO> getLeavesByResourceIdAndStatus(String id,TransactionStatusEnum transactionStatus);
 
     List<LeaveDTO> getLeavesByApproverId(String id);
-
-     LeaveDTO addLeave(LeaveDTO leaveDTO);
+    LeaveDTO addLeave(LeaveDTO leaveDTO);
 
     LeaveDTO updateLeave(int id , LeaveDTO leaveDTO);
+    void deleteLeave(int id);
 
     LeaveDTO approveLeave(int id,LeaveDTO leaveDTO);
 

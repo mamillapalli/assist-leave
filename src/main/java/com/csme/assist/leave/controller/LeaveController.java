@@ -118,6 +118,13 @@ public class LeaveController {
         return new ResponseEntity<>(leaveService.updateLeave(id,leaveDTO),HttpStatus.ACCEPTED);
     }
 
+    @DeleteMapping(path = "/deleteleaves/{id}")
+    public ResponseEntity<LeaveDTO> deleteLeave(@PathVariable (name = "id") int id)
+    {
+        leaveService.deleteLeave(id);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
 
     @PutMapping(path = "/approveleaves/{id}")
     public ResponseEntity<LeaveDTO> approveLeave(@Valid @RequestBody LeaveDTO leaveDTO,@PathVariable (name = "id") int id)

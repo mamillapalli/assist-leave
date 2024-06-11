@@ -4,7 +4,6 @@ import com.csme.assist.leave.entity.Leave;
 import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

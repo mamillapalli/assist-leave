@@ -1,10 +1,12 @@
 package com.csme.assist.leave.service;
 
+import com.csme.assist.leave.entity.DeletedLeave;
 import com.csme.assist.leave.entity.Leave;
 import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.csme.assist.leave.jwtauthentication.configuration.service.JWTUtil;
 import com.csme.assist.leave.model.LeaveDTO;
+import com.csme.assist.leave.repository.DeletedLeavesRepository;
 import com.csme.assist.leave.repository.LeaveRepository;
 import com.csme.assist.leave.repository.ResourceRepository;
 import jdk.jshell.Snippet;
@@ -25,6 +27,9 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Autowired
     LeaveRepository leaveRepository;
+
+    @Autowired
+    DeletedLeavesRepository deletedLeaveRepository;
 
     @Autowired
     LeaveMapper leaveMapper;
@@ -122,6 +127,17 @@ public class LeaveServiceImpl implements LeaveService {
         leave.setTicketsPaid(leaveDTO.isTicketsPaid());
         Leave updatedLeave = leaveRepository.save(leave);
         return leaveMapper.leaveToLeaveDTO(updatedLeave);
+    }
+
+    @Override
+    public void deleteLeave(int userId)
+    {
+        leaveRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + userId + " not found"));
+        Leave leave = leaveRepository.findById(userId).get();
+        //saving the deleted leave in to DELETED_LEAVE_TABLE and deleting the entry from LEAVE_TABLE.
+        //TODO: need to check if typecasting works   
+        deletedLeaveRepository.save((DeletedLeave)leave);
+        leaveRepository.deleteById(userId);
     }
 
     @Override
