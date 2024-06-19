@@ -1,10 +1,22 @@
 package com.csme.assist.leave.entity;
 
-import jdk.jshell.Snippet;
-import lombok.*;
+import java.time.LocalDate;
 
-import javax.persistence.*;
-import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 
@@ -14,19 +26,20 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
+//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class  Leave extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name="LEAVE_ID")
     private int id;
-    @Column(name = "NAME")
+    @Column(name = "LEAVE_NAME")
     private String name;
     @Column (name ="DESCRIPTION")
     private String description;
     @Column(name = "START_DATE")
-    private Date startDate;
+    private LocalDate startDate;
     @Column (name = "END_DATE")
-    private Date endDate;
+    private LocalDate endDate;
     @Column (name = "NUMBER_OF_DAYS")
     private int numberOfDays;
     @Column (name = "PAY_PERCENTAGE")
@@ -50,5 +63,7 @@ public class  Leave extends Base {
     private String approverComments;
     @Column(name = "DELETE_FLAG")
     private boolean deleteFlag;
+    @Column(name = "notes")
+    private String notes;
 
 }

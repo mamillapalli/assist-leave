@@ -1,6 +1,6 @@
 package com.csme.assist.leave.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,9 +32,9 @@ public class Holiday extends Base{
     @Column (name ="DESCRIPTION")
     private String description;
     @Column(name = "START_DATE")
-    private Date startDate;
+    private LocalDate startDate;
     @Column (name = "END_DATE")
-    private Date endDate;
+    private LocalDate endDate;
     @Column (name = "NUMBER_OF_DAYS")
-    private int numberOfDays;
+    private long numberOfDays;
 }

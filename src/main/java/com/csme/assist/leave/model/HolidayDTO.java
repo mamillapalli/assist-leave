@@ -1,6 +1,6 @@
 package com.csme.assist.leave.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -17,8 +17,8 @@ private int id;
     private int year;
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" ,timezone = "Asia/Dubai")
-    private Date startDate;
+    private LocalDate startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" ,timezone = "Asia/Dubai")
-    private Date endDate;
+    private LocalDate endDate;
     private int numberOfDays;
 }

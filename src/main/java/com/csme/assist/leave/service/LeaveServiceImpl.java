@@ -5,8 +5,11 @@ import com.csme.assist.leave.entity.Leave;
 import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.csme.assist.leave.jwtauthentication.configuration.service.JWTUtil;
+import com.csme.assist.leave.model.HolidayDTO;
 import com.csme.assist.leave.model.LeaveDTO;
+import com.csme.assist.leave.model.LeaveSummuryDTO;
 import com.csme.assist.leave.repository.DeletedLeavesRepository;
+import com.csme.assist.leave.repository.HolidayRepository;
 import com.csme.assist.leave.repository.LeaveRepository;
 import com.csme.assist.leave.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +17,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+
+import com.csme.assist.leave.mapper.DeleteLeaveMapper;
 import com.csme.assist.leave.mapper.LeaveMapper;
 
 @Service
 public class LeaveServiceImpl implements LeaveService {
 
     @Autowired
-    LeaveService leaveService;
-
-    @Autowired
     ResourceRepository resourceRepository;
 
+    @Autowired
+    HolidayService holidayService;
     @Autowired
     LeaveRepository leaveRepository;
 
@@ -34,6 +41,9 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Autowired
     LeaveMapper leaveMapper;
+    
+    @Autowired
+    DeleteLeaveMapper deleteLeaveMapper;
 
     @Autowired
     JWTUtil jwtUtil;
@@ -92,11 +102,19 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public List<LeaveDTO> getLeavesByResourceIdAndStatus(String id,TransactionStatusEnum transactionStatus) {
+    public List<LeaveDTO> getLeavesByResourceIdAndTransactionStatus(String id,TransactionStatusEnum transactionStatus) {
         List<Leave> leave = leaveRepository.findByResourceIdAndTransactionStatus(id,transactionStatus);
         if(leave.size()==0) throw new RuntimeException("There are no pending leave request currently in the system");
         return leaveMapper.leaveToLeaveDTOs(leave);
     }
+    
+    @Override
+    public List<LeaveDTO> getLeavesByResourceIdAndStatus(String id,StatusEnum status) {
+        List<Leave> leave = leaveRepository.findByResourceIdAndStatus(id,status);
+        if(leave.size()==0) throw new RuntimeException("There are no pending leave request currently in the system");
+        return leaveMapper.leaveToLeaveDTOs(leave);
+    }
+    
 
     @Override
     public List<LeaveDTO> getLeavesByApproverId(String id) {
@@ -115,8 +133,27 @@ public class LeaveServiceImpl implements LeaveService {
         Leave leave = leaveMapper.leaveDTOToLeave(leaveDTO);
         leave.setStatus(StatusEnum.WAITING);
         leave.setTransactionStatus(TransactionStatusEnum.PENDING);
+        Long numberOfDays = calculateDays(leaveDTO.getStartDate(), leaveDTO.getEndDate());
+        leave.setNumberOfDays(numberOfDays.intValue());
         leave.setCreationDetails(jwtUtil.extractUsernameFromRequest());
         return leaveMapper.leaveToLeaveDTO(leaveRepository.save(leave));
+    }
+    
+    @Override
+    public LeaveSummuryDTO leaveSummary(String resourceId) {
+    	int numberOfDays=0;
+    	
+    	
+    	List<LeaveDTO> leavesByResourceIdAndStatus = getLeavesByResourceIdAndStatus(resourceId,StatusEnum.APPROVED);
+    	for(LeaveDTO leaveDTO:leavesByResourceIdAndStatus) {
+    		numberOfDays += leaveDTO.getNumberOfDays();
+    	}
+
+    	int exceededLeaves = numberOfDays> maxNoOfHolidays?numberOfDays-maxNoOfHolidays:0;
+    	LeaveSummuryDTO dto = new LeaveSummuryDTO();
+    	dto.setExceededLeaves(exceededLeaves);
+    	dto.setLeavesTaken(numberOfDays);
+    	return dto;
     }
 
     @Override
@@ -142,9 +179,7 @@ public class LeaveServiceImpl implements LeaveService {
     {
         leaveRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + id + " not found"));
         Leave leave = leaveRepository.findById(id).get();
-        //saving the deleted leave in to DELETED_LEAVE_TABLE and deleting the entry from LEAVE_TABLE.
-        //TODO: need to check if typecasting works   
-        deletedLeaveRepository.save((DeletedLeave)leave);
+        deletedLeaveRepository.save(deleteLeaveMapper.leaveToDeletedLeave(leave));
         leaveRepository.deleteById(id);
     }
 
@@ -179,8 +214,53 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public Integer calculateDays(Date startDate, Date endDate) {
-        return 0;
+    public Long calculateDays(LocalDate startDate, LocalDate endDate) {
+    	
+    	Long leaves = ChronoUnit.DAYS.between(startDate, endDate) +1;
+    	
+    	if(!addHolidaysToLeave) {
+    		return leaves;
+    	}
+    	
+    	int year = 2024; //getCUrrentYear
+    	
+    	List<HolidayDTO> holidayDTOs = holidayService.getHolidaysOfYear(year);
+
+		String[] weekendList = weekends.split(",");
+		
+		Map<String, DayOfWeek> weekdays = new HashMap<String, DayOfWeek>();
+		weekdays.put("firstWeekend", DayOfWeek.valueOf(weekendList[0].toUpperCase()));
+		weekdays.put("secondWeekend", DayOfWeek.valueOf(weekendList[1].toUpperCase()));
+		System.out.println("***** firstWeekend= "+weekdays.get("firstWeekend"));
+		System.out.println("***** secondWeekend= "+weekdays.get("secondWeekend"));
+		
+		LocalDate dayBeforeStartDate = startDate.minusDays(1);
+		LocalDate dayAfterEndDate = endDate.plusDays(1);
+		
+		if(dayBeforeStartDate.getDayOfWeek()==weekdays.get("secondWeekend")) {
+			leaves+=2;
+		}else if (dayBeforeStartDate.getDayOfWeek() != weekdays.get("firstWeekend") && 
+						dayBeforeStartDate.getDayOfWeek() != weekdays.get("secondWeekend")) {
+			
+			 Optional<HolidayDTO> optionalMatch = holidayDTOs.stream().filter(dto -> dayAfterEndDate.isEqual(dto.getStartDate())).findAny();
+			 if(optionalMatch.isPresent()){
+				leaves += optionalMatch.get().getNumberOfDays(); 
+			 }
+		}
+		if (dayAfterEndDate.getDayOfWeek()==weekdays.get("firstWeekend")) {
+			leaves+=2;
+		}else if (dayAfterEndDate.getDayOfWeek() != weekdays.get("firstWeekend") && 
+						dayAfterEndDate.getDayOfWeek() != weekdays.get("secondWeekend")) {
+			
+			 Optional<HolidayDTO> optionalMatch = holidayDTOs.stream().filter(dto -> startDate.minusDays(1).equals(dto.getEndDate())).findAny();
+			 if(optionalMatch.isPresent()){
+				leaves += optionalMatch.get().getNumberOfDays(); 
+			 }
+			
+		}
+		
+		
+		return leaves;
     }
 
 //    @Override

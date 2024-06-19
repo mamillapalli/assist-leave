@@ -1,5 +1,6 @@
 package com.csme.assist.leave.service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -30,10 +31,17 @@ public class HolidayService {
         List<Holiday>  holidays = holidayRepository.findAll();
         return holidayMapper.holidayToHolidayDTOs(holidays);
     }
-
+    
+    public List<HolidayDTO> getHolidaysOfYear(int year){
+        List<Holiday>  holidays = holidayRepository.findByYear(year);
+        return holidayMapper.holidayToHolidayDTOs(holidays);
+    }
+    
     public HolidayDTO addHoliday(@Valid HolidayDTO holidayDTO) {
         Holiday holiday = holidayMapper.holidayDTOToHoliday(holidayDTO);
         holiday.setCreationDetails(jwtUtil.extractUsernameFromRequest());
+        long noOfDays =   ChronoUnit.DAYS.between(holidayDTO.getStartDate(), holidayDTO.getEndDate()) + 1;
+        holiday.setNumberOfDays(noOfDays);
         holiday = holidayRepository.save(holiday);
         return holidayMapper.holidayToHolidayDTO(holiday);
     }
