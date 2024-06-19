@@ -142,9 +142,20 @@ public class LeaveServiceImpl implements LeaveService {
     {
         leaveRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + id + " not found"));
         Leave leave = leaveRepository.findById(id).get();
-        //saving the deleted leave in to DELETED_LEAVE_TABLE and deleting the entry from LEAVE_TABLE.
-        //TODO: need to check if typecasting works   
-        deletedLeaveRepository.save((DeletedLeave)leave);
+        DeletedLeave deletedLeave = new DeletedLeave();
+        deletedLeave.setDescription(leave.getDescription());
+        deletedLeave.setName(leave.getName());
+        deletedLeave.setStatus(leave.getStatus());
+        deletedLeave.setApproverId(leave.getApproverId());
+        deletedLeave.setApproverComments(leave.getApproverComments());
+        deletedLeave.setContactAddress(leave.getContactAddress());
+        deletedLeave.setContactPhone(leave.getContactPhone());
+        deletedLeave.setEndDate(leave.getEndDate());
+        deletedLeave.setEndDate(leave.getEndDate());
+        deletedLeave.setResourceId(leave.getResourceId());
+        deletedLeave.setTicketsTo(leave.getTicketsTo());
+
+        deletedLeaveRepository.save((deletedLeave));
         leaveRepository.deleteById(id);
     }
 
