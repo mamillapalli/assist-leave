@@ -2,36 +2,23 @@ package com.csme.assist.leave.model;
 
 import java.time.LocalDate;
 
-import com.csme.assist.leave.entity.StatusEnum;
-import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LeaveDTO {
-    private int id;
+public class HolidayDTO {
+private int id;
     private String name;
+    private int year;
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" ,timezone = "Asia/Dubai")
     private LocalDate startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" ,timezone = "Asia/Dubai")
     private LocalDate endDate;
     private int numberOfDays;
-    private int payPercentage;
-    private String resourceId;
-    private String approverId;
-    private String contactAddress;
-    private String contactPhone;
-    private boolean ticketsPaid;
-    private String ticketsTo;
-    private StatusEnum status;
-    private String approverComments;
-    private boolean deleteFlag;
-    private TransactionStatusEnum transactionStatus;
 }

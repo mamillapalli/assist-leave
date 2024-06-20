@@ -16,19 +16,20 @@ create table public.leave_table
     transaction_status varchar(255),
     approver_comments  varchar(255),
     approver_id        varchar(255),
-    contact_address    varchar(255),
+    contact_address    varchar(1000),
     contact_phone      varchar(255),
     delete_flag        boolean,
     description        varchar(255),
     end_date           timestamp,
-    name               varchar(255),
+    leave_name         varchar(255),
     number_of_days     integer,
     pay_percentage     integer,
     resource_id        varchar(255),
     start_date         timestamp,
     status             varchar(255),
     tickets_paid       boolean,
-    tickets_to         varchar(255)
+    tickets_to         varchar(255),
+    notes  			   varchar(2000)
 );
 
 alter table public.leave_table
