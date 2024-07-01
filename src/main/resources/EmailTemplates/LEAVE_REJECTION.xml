@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+    <toAddress><![CDATA[<%emailAddress%>;<%DEFAULT%>]]></toAddress>
+    <ccAddress><![CDATA[<%emailAddress%>;<%customerAddress%>]]></ccAddress>
+    <bccAddress><![CDATA[<%emailAddress%>;bccaddress@gmail.com]]></bccAddress>
+    <mailSubject><![CDATA[Finance Request with  Id - <%financeId%> is Approved]]></mailSubject>
+    <fromAddress/>
+    <mailContent><![CDATA[Dear user,<br><br>
+
+<p>We are hereby to notify that your finance request is approved for Amount:<%financeCurrency%><%financeAmount%> for below invoices<p><br>
+<%invoiceList.invoiceNumber%><br>
+<p>Please find attached document for your reference. Kindly note that the attachments are password protected. To open the attachment, kindly enter your 6 / 8 digit Customer ID. This e-mail is for your information and does not require a response.</p><br><br>
+
+<p>If you wish to contact us for any further clarifications, please e-mail us at xxxx or call XXXXXXXXXXXXXXXXXXX within UAE or XXXXXXXXXXXXX from outside UAE.</p><br><br>
+
+Sincerely,<br>
+Customer Business Department<br>
+www.OA-ADMIN.com]]></mailContent>
+</root>
