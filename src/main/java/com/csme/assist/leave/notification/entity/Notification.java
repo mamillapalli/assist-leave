@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "NOTIFICATION_TABLE", schema = "LEAVE")
+@Table(name = "NOTIFICATION_TABLE", schema = "PUBLIC")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
