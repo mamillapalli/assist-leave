@@ -50,5 +50,22 @@ public class  Leave extends Base {
     private String approverComments;
     @Column(name = "DELETE_FLAG")
     private boolean deleteFlag;
+    
+    //added 4 notification
+    
+    @Column(name = "COLLEAGUE_NAME")
+    private String colleagueName;
+    
+    @Column(name = "COLLEAGUE_EMAIL")
+    private String colleagueEmail;
+    
+    @Column(name = "COLLEAGUE_CONTACT")
+    private long colleagueContact;
+    
+    @Column(name = "DEPARTMENT")
+    private String department;
+    
+    @Column(name = "POSITION")
+    private String position;
 
 }

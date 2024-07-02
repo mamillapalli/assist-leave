@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
 
+import javax.persistence.Column;
+
 
 @Data
 @AllArgsConstructor
@@ -32,4 +34,15 @@ public class LeaveDTO {
     private String approverComments;
     private boolean deleteFlag;
     private TransactionStatusEnum transactionStatus;
+    
+    private String leaveSeekarName;
+    private String approversName;
+    
+    private String colleagueName;
+    private String colleagueEmail;
+    private long colleagueContact;
+    private String department;
+    private String position;
+    private String assistLogo;
+
 }
