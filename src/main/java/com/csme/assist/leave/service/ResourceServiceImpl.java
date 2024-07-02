@@ -4,7 +4,9 @@ import com.csme.assist.leave.entity.Resource;
 import com.csme.assist.leave.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ResourceServiceImpl implements ResourceService{
 
     @Autowired

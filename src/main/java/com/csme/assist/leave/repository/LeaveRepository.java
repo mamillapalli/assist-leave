@@ -5,6 +5,7 @@ import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,6 +27,11 @@ public interface LeaveRepository extends JpaRepository<Leave, Integer> {
     Optional<List<Leave>> findByApproverIdAndStatus(String id, StatusEnum status);
 
     List<Leave> findByTransactionStatusAndResourceIdNot(TransactionStatusEnum status,String id);
+
+    @Query("select l from Leave l where l.resourceId = :resourceId or (l.approverId = :approverId and l.status = :status)")
+    List<Leave> findByResourceIdAndApproverIdOrStatus(@Param("resourceId") String resourceId,
+                                                      @Param("approverId")String approverId,
+                                                      @Param("status")StatusEnum status);
 }
 
 

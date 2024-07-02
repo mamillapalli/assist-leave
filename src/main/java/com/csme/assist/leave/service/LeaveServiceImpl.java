@@ -70,7 +70,8 @@ public class LeaveServiceImpl implements LeaveService {
 //            leave = leaveRepository.findByResourceId(id);
 //
 //        }
-        leave = leaveRepository.findByResourceId(id);
+        //leave = leaveRepository.findByResourceId(id);
+        leave = leaveRepository.findByResourceIdAndApproverIdOrStatus(id, id, StatusEnum.WAITING);
         if (leave.size()==0)
             throw new RuntimeException("Leave with resource " + id + " does not exist");
         return leaveMapper.leaveToLeaveDTOs(leave);
