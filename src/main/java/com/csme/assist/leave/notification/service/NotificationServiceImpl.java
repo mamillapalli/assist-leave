@@ -43,7 +43,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .transactionInformation(objectMapper.writeValueAsString(object))
                 .notificationEvent(notificationEvent)
                 .build();
-        Base baseDetails = objectMapper.readValue(objectMapper.writeValueAsString(object), Base.class);
+        //Base baseDetails = objectMapper.readValue(objectMapper.writeValueAsString(object), Base.class);
         notification.setCreationDetails(jwtUtil.extractUsernameFromRequest());
         notificationRepository.save(notification);
 

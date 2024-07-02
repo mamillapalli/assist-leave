@@ -35,14 +35,11 @@ public class LeaveDTO {
     private boolean deleteFlag;
     private TransactionStatusEnum transactionStatus;
     
-    private String leaveSeekarName;
-    private String approversName;
-    
+    private String leaveSeekerName;
+    private String approverName;
     private String colleagueName;
     private String colleagueEmail;
     private long colleagueContact;
-    private String department;
-    private String position;
     private String assistLogo;
 
 }

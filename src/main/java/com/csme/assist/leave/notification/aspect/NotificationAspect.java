@@ -53,16 +53,19 @@ public class NotificationAspect {
             try {
                 switch (joinPoint.getSignature().getName()) {
                     case "addLeave":
-                        notificationService.addLeave(result, NotificationEvent.LEAVE_CREATION);
+                        notificationService.addLeave(result, NotificationEvent.LEAVE_CREATION_APPROVER);
+                        notificationService.addLeave(result, NotificationEvent.LEAVE_CREATION_SEEKER);
                         break;
                     case "updateLeave":
                         notificationService.updateLeave(result, NotificationEvent.LEAVE_MODIFICATION);
                         break;
                     case "approveLeave":
-                        notificationService.approveLeave(result, NotificationEvent.LEAVE_APPROVAL);
+                        notificationService.approveLeave(result, NotificationEvent.LEAVE_APPROVAL_APPROVER);
+                        notificationService.approveLeave(result, NotificationEvent.LEAVE_APPROVAL_SEEKER);
                         break;
                     case "rejectLeave":
-                        notificationService.rejectLeave(result, NotificationEvent.LEAVE_REJECTION);
+                        notificationService.rejectLeave(result, NotificationEvent.LEAVE_REJECTION_APPROVER);
+                        notificationService.rejectLeave(result, NotificationEvent.LEAVE_REJECTION_SEEKER);
                         break;
                 }
             } catch (JsonProcessingException e) {

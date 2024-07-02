@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <root>
-    <toAddress><![CDATA[<%emailAddress%>;<%DEFAULT%>]]></toAddress>
+    <toAddress><![CDATA[<%approverId%>;<%DEFAULT%>]]></toAddress>
     <ccAddress><![CDATA[<%emailAddress%>;<%customerAddress%>]]></ccAddress>
     <bccAddress><![CDATA[<%emailAddress%>;bccaddress@gmail.com]]></bccAddress>
-    <mailSubject><![CDATA[Leave Application for <%leaveSeekarName%> from <%startDate%> to <%endDate%>]]></mailSubject>
+    <mailSubject><![CDATA[Leave Application for <%leaveSeekerName%> from <%startDate%> to <%endDate%>]]></mailSubject>
     <fromAddress/>
-    <mailContent><![CDATA[Dear <%approversName%>,<br><br>
+    <mailContent><![CDATA[Dear <%approverName%>,<br><br>
 
 <p>A Leave request is awaiting approval with the following details</p><br>
 <p>Details of the Leave:</p><br><br>
-<p>Employee Name: <%approversName%></p><br>
-<p>Department: <%department%></p><br>
-<p>Position: <%position%></p><br>
+<p>Employee Name: <%approverName%></p><br>
 <p>Leave Duration: <%startDate%> to <%endDate%></p><br>
 <p>Total Days: <%numberOfDays%></p><br>
 <p>Reason for Leave:<%description%></p><br><br>
@@ -23,5 +21,5 @@
 <p>Should there be any emergencies or if further clarification is needed, I can be reached at <%contactPhone%>.</p><br>
 
 <%assistLogo%><br>
-Assist Leave Notificaiton.]]></mailContent>
+Assist Leave Notification.]]></mailContent>
 </root>

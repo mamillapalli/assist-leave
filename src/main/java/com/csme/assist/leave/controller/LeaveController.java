@@ -11,6 +11,7 @@ import com.csme.assist.leave.redis.entity.RedisBusinessUnit;
 import com.csme.assist.leave.redis.repository.RedisBusinessUnitRepository;
 import com.csme.assist.leave.repository.LeaveRepository;
 import com.csme.assist.leave.service.LeaveService;
+import com.csme.assist.leave.service.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,26 +28,19 @@ public class LeaveController {
 
     @Autowired
     LeaveRepository leaveRepository;
-
     @Autowired
     LeaveService leaveService;
-
 
     Logger logger = LoggerFactory.getLogger(LeaveController.class);
 
     @Autowired
     RedisBusinessUnitRepository redisBusinessUnitRepository;
-
-
     AssistUserDetailsService assistUserDetailsService = new AssistUserDetailsService();
-
-
     RedisBusinessUnit redisBusinessUnit = new RedisBusinessUnit();
-
     @Autowired
     ResourceRepository resourceRepository;
-
-
+    @Autowired
+    ResourceService resourceService;
     @Autowired
     JWTUtil jwtUtil;
 
@@ -73,14 +67,12 @@ public class LeaveController {
         return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
     }
 
-
     @GetMapping (path = "/leavesByResourceId/{id}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByResourceId( @PathVariable (name = "id") String id)
     {
         return new ResponseEntity<>(leaveService.getLeavesByResourceId(id), HttpStatus.OK);
 
     }
-
 
     @GetMapping (path = "/leavesByResourceId/{id}/{TRANSACTIONSTATUS}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByResourceIdAndStatus( @PathVariable (name = "id") String id, @PathVariable (name = "TRANSACTIONSTATUS") TransactionStatusEnum status)
@@ -89,13 +81,11 @@ public class LeaveController {
 
     }
 
-
     @GetMapping (path = "/leavesByApproverId/{id}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByApproverId( @PathVariable (name = "id") String id)
     {
         return new ResponseEntity<>(leaveService.getLeavesByApproverId(id), HttpStatus.OK);
     }
-
 
     @GetMapping (path = "/leavesByApproverId/{id}/{STATUS}")
     public ResponseEntity<List<LeaveDTO>> getLeavesByApproverIdAndStatus( @PathVariable (name = "id") String id, @PathVariable (name = "STATUS") StatusEnum status)
@@ -105,41 +95,58 @@ public class LeaveController {
         return new ResponseEntity<>(leaveService.getLeavesByApproverIdAndStatus(id,status), HttpStatus.OK);
     }
 
-
     @PostMapping(path = "/leaves")
     public ResponseEntity<LeaveDTO> addLeave(@Valid @RequestBody LeaveDTO leaveDTO) throws Exception {
+        String resourceEmail = leaveDTO.getResourceId();
+        String approverEmail = leaveDTO.getApproverId();
+        Resource seeker = resourceService.findByEmail(resourceEmail);
+        Resource approver = resourceService.findByEmail(approverEmail);
+        leaveDTO.setLeaveSeekerName(seeker.getFirstName());
+        leaveDTO.setApproverName(approver.getFirstName());
         return new ResponseEntity<>(leaveService.addLeave(leaveDTO),HttpStatus.ACCEPTED);
     }
-
 
     @PutMapping(path = "/leaves/{id}")
     public ResponseEntity<LeaveDTO> updateLeave(@Valid @RequestBody LeaveDTO leaveDTO, @PathVariable (name = "id") int id)
     {
+        String resourceEmail = leaveDTO.getResourceId();
+        String approverEmail = leaveDTO.getApproverId();
+        Resource seeker = resourceService.findByEmail(resourceEmail);
+        Resource approver = resourceService.findByEmail(approverEmail);
+        leaveDTO.setLeaveSeekerName(seeker.getFirstName());
+        leaveDTO.setApproverName(approver.getFirstName());
         return new ResponseEntity<>(leaveService.updateLeave(id,leaveDTO),HttpStatus.ACCEPTED);
     }
-
 
     @PutMapping(path = "/approveleaves/{id}")
     public ResponseEntity<LeaveDTO> approveLeave(@Valid @RequestBody LeaveDTO leaveDTO,@PathVariable (name = "id") int id)
     {
+        String resourceEmail = leaveDTO.getResourceId();
+        String approverEmail = leaveDTO.getApproverId();
+        Resource seeker = resourceService.findByEmail(resourceEmail);
+        Resource approver = resourceService.findByEmail(approverEmail);
+        leaveDTO.setLeaveSeekerName(seeker.getFirstName());
+        leaveDTO.setApproverName(approver.getFirstName());
         LeaveDTO leaveDTOs = leaveService.approveLeave(id,leaveDTO);
         return new ResponseEntity<>(leaveDTOs, HttpStatus.OK);
     }
 
-
     @PutMapping(path = "/rejectleaves/{id}")
     public ResponseEntity<LeaveDTO> rejectLeave(@Valid @RequestBody LeaveDTO leaveDTO,@PathVariable (name = "id") int id)
     {
-        LeaveDTO leaveDTOs = leaveService.rejectLeave(id,leaveDTO);
+        String resourceEmail = leaveDTO.getResourceId();
+        String approverEmail = leaveDTO.getApproverId();
+        Resource seeker = resourceService.findByEmail(resourceEmail);
+        Resource approver = resourceService.findByEmail(approverEmail);
+        leaveDTO.setLeaveSeekerName(seeker.getFirstName());
+        leaveDTO.setApproverName(approver.getFirstName());
+        leaveDTO = leaveService.rejectLeave(id,leaveDTO);
         return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
     }
-
 
     @GetMapping (path = "/profile")
     public Optional<Resource> getProfile()
     {
-        Optional<Resource> resource = resourceRepository.findByEmailAddress(jwtUtil.extractUsernameFromRequest());
-        return resource;
+        return resourceRepository.findByEmailAddress(jwtUtil.extractUsernameFromRequest());
     }
-
 }

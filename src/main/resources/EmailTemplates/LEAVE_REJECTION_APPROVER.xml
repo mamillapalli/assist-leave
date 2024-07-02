@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <root>
-    <toAddress><![CDATA[<%emailAddress%>;<%DEFAULT%>]]></toAddress>
+    <toAddress><![CDATA[<%resourceId%>;<%DEFAULT%>]]></toAddress>
     <ccAddress><![CDATA[<%emailAddress%>;<%customerAddress%>]]></ccAddress>
     <bccAddress><![CDATA[<%emailAddress%>;bccaddress@gmail.com]]></bccAddress>
-    <mailSubject><![CDATA[Leave Application Rejection Notification for <%leaveSeekarName%>]]></mailSubject>
+    <mailSubject><![CDATA[Leave Application Rejection Notification for <%leaveSeekerName%>]]></mailSubject>
     <fromAddress/>
     <mailContent><![CDATA[
 
-<p>Leave request of <%leaveSeekarName%>, from <%startDate%> to <%endDate%> has been rejected, by <%approversName%>.</p><br>
+<p>Leave request of <%leaveSeekerName%>, from <%startDate%> to <%endDate%> has been rejected, by <%approverName%>.</p><br>
 <p>Details of Your Rejected Leave:</p><br><br>
-<p>Employee Name: <%leaveSeekarName%></p><br>
-<p>Department: <%department%></p><br>
-<p>Position: <%position%></p><br>
+<p>Employee Name: <%leaveSeekerName%></p><br>
 <p>Leave Duration: <%startDate%> to <%endDate%></p><br>
 <p>Total Days: <%numberOfDays%></p><br>
 
 <%assistLogo%><br>
-Assist Leave Notificaiton.]]></mailContent>
+Assist Leave Notification.]]></mailContent>
 </root>
