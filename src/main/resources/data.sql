@@ -29,7 +29,10 @@ create table public.leave_table
     start_date         timestamp,
     status             varchar(255),
     tickets_paid       boolean,
-    tickets_to         varchar(255)
+    tickets_to         varchar(255),
+    COLLEAGUE_NAME     varchar(255),
+    COLLEAGUE_EMAIL		varchar(255),
+    COLLEAGUE_CONTACT  integer
 );
 
 alter table public.leave_table

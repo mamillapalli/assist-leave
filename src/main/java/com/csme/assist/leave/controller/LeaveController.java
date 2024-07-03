@@ -103,6 +103,7 @@ public class LeaveController {
         Resource approver = resourceService.findByEmail(approverEmail);
         leaveDTO.setLeaveSeekerName(seeker.getFirstName());
         leaveDTO.setApproverName(approver.getFirstName());
+        System.out.println("****** "+leaveDTO);
         return new ResponseEntity<>(leaveService.addLeave(leaveDTO),HttpStatus.ACCEPTED);
     }
 

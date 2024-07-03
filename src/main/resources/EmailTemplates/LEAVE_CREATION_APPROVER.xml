@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <root>
-    <toAddress><![CDATA[<%approverId%>;<%DEFAULT%>]]></toAddress>
-    <ccAddress><![CDATA[<%emailAddress%>;<%customerAddress%>]]></ccAddress>
-    <bccAddress><![CDATA[<%emailAddress%>;bccaddress@gmail.com]]></bccAddress>
+    <toAddress><![CDATA[<%approverId%>]]></toAddress>
+    <ccAddress><![CDATA[]]></ccAddress>
+    <bccAddress><![CDATA[]]></bccAddress>
     <mailSubject><![CDATA[Leave Application for <%leaveSeekerName%> from <%startDate%> to <%endDate%>]]></mailSubject>
     <fromAddress/>
     <mailContent><![CDATA[Dear <%approverName%>,<br><br>

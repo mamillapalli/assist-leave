@@ -104,7 +104,10 @@ public class LeaveServiceImpl implements LeaveService {
         leave.setStatus(StatusEnum.WAITING);
         leave.setTransactionStatus(TransactionStatusEnum.PENDING);
         leave.setCreationDetails(jwtUtil.extractUsernameFromRequest());
-        return leaveMapper.leaveToLeaveDTO(leaveRepository.save(leave));
+         LeaveDTO leaveToLeaveDTO = leaveMapper.leaveToLeaveDTO(leaveRepository.save(leave));
+         leaveToLeaveDTO.setApproverName(leaveDTO.getApproverName());
+         leaveToLeaveDTO.setLeaveSeekerName(leaveDTO.getLeaveSeekerName());
+         return leaveToLeaveDTO;
     }
 
     @Override

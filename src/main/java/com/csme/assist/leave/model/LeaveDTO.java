@@ -33,13 +33,13 @@ public class LeaveDTO {
     private StatusEnum status;
     private String approverComments;
     private boolean deleteFlag;
+    private String colleagueName;
+    private String colleagueEmail;
+    private long colleagueContact;
     private TransactionStatusEnum transactionStatus;
     
     private String leaveSeekerName;
     private String approverName;
-    private String colleagueName;
-    private String colleagueEmail;
-    private long colleagueContact;
     private String assistLogo;
 
 }
