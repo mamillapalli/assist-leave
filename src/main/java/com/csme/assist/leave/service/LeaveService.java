@@ -30,4 +30,6 @@ public interface LeaveService {
     LeaveDTO rejectLeave(int id,LeaveDTO leaveDTO);
 
     List<LeaveDTO> getLeavesByApproverIdAndStatus(String id, StatusEnum status);
+    
+    void deleteLeave(int id);
 }
