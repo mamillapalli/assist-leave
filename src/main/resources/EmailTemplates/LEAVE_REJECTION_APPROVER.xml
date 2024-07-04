@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <root>
-    <toAddress><![CDATA[<%resourceId%>;<%DEFAULT%>]]></toAddress>
-    <ccAddress><![CDATA[<%emailAddress%>;<%customerAddress%>]]></ccAddress>
-    <bccAddress><![CDATA[<%emailAddress%>;bccaddress@gmail.com]]></bccAddress>
+    <toAddress><![CDATA[<%resourceId%>]]></toAddress>
+    <ccAddress><![CDATA[ravikanthm@gmail.com]]></ccAddress>
+    <bccAddress><![CDATA[ravikanthm@gmail.com]]></bccAddress>
     <mailSubject><![CDATA[Leave Application Rejection Notification for <%leaveSeekerName%>]]></mailSubject>
     <fromAddress/>
     <mailContent><![CDATA[

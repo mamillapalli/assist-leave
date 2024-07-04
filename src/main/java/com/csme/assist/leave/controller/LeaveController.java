@@ -150,4 +150,11 @@ public class LeaveController {
     {
         return resourceRepository.findByEmailAddress(jwtUtil.extractUsernameFromRequest());
     }
+    @DeleteMapping(path = "/leaves/{id}")
+    public ResponseEntity<String> deleteLeave( @PathVariable (name = "id") int id)
+    {
+    	leaveService.deleteLeave(id);
+    	return ResponseEntity.ok().body("Leave with ID "+ id + " has been deleted ");
+    }
 }
+

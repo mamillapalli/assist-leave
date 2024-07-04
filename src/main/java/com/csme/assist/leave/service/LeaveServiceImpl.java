@@ -158,6 +158,14 @@ public class LeaveServiceImpl implements LeaveService {
         return leaveMapper.leaveToLeaveDTO(savedUser);
     }
 
+	@Override
+	public void deleteLeave(int id) {
+		if(!leaveRepository.existsById(id)) 
+			throw new ResourceNotFoundException("Leave is not exist with ID - "+id);
+		leaveRepository.deleteById(id);
+		}
+	
+
 //    @Override
 //    public List<LeaveDTO> getPendingLeavesByApproverId(int id) {
 //        List<Leave> leaves = leaveRepository.findByPendingApproverId(id,TransactionStatusEnum.PENDING);
@@ -167,6 +175,7 @@ public class LeaveServiceImpl implements LeaveService {
 //        return leaveDTOS;
 //    }
 
+    
 
 
 }
