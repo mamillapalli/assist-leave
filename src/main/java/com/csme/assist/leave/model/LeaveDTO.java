@@ -3,10 +3,12 @@ package com.csme.assist.leave.model;
 import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 
@@ -26,6 +28,8 @@ public class LeaveDTO {
     private int payPercentage;
     private String resourceId;
     private String approverId;
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private List<ApproverDTO> approver;
     private String contactAddress;
     private String contactPhone;
     private boolean ticketsPaid;
@@ -41,5 +45,9 @@ public class LeaveDTO {
     private String leaveSeekerName;
     private String approverName;
     private String assistLogo;
+
+    public void setApprover(List<ApproverDTO> approverInfo){
+        approverId = approverInfo == null || approverInfo.isEmpty() ? approverId : approverInfo.get(0).getEmail();
+    }
 
 }
