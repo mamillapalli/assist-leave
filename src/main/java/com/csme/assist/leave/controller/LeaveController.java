@@ -5,6 +5,7 @@ import com.csme.assist.leave.entity.Resource;
 import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.csme.assist.leave.model.LeaveDTO;
+import com.csme.assist.leave.model.LeaveSummuryDTO;
 import com.csme.assist.leave.repository.ResourceRepository;
 import com.csme.assist.leave.jwtauthentication.configuration.service.JWTUtil;
 import com.csme.assist.leave.redis.entity.RedisBusinessUnit;
@@ -15,10 +16,13 @@ import com.csme.assist.leave.service.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,9 +79,9 @@ public class LeaveController {
     }
 
     @GetMapping (path = "/leavesByResourceId/{id}/{TRANSACTIONSTATUS}")
-    public ResponseEntity<List<LeaveDTO>> getLeavesByResourceIdAndStatus( @PathVariable (name = "id") String id, @PathVariable (name = "TRANSACTIONSTATUS") TransactionStatusEnum status)
+    public ResponseEntity<List<LeaveDTO>> getLeavesByResourceIdAndTransactionStatus( @PathVariable (name = "id") String id, @PathVariable (name = "TRANSACTIONSTATUS") TransactionStatusEnum status)
     {
-        return new ResponseEntity<>(leaveService.getLeavesByResourceIdAndStatus(id,status), HttpStatus.OK);
+        return new ResponseEntity<>(leaveService.getLeavesByResourceIdAndTransactionStatus(id,status), HttpStatus.OK);
 
     }
 
@@ -119,6 +123,20 @@ public class LeaveController {
         return new ResponseEntity<>(leaveService.updateLeave(id,leaveDTO),HttpStatus.ACCEPTED);
     }
 
+    @DeleteMapping(path = "/deleteleaves/{id}")
+    public ResponseEntity<LeaveDTO> deleteLeave(@PathVariable (name = "id") int id)
+    {
+        leaveService.deleteLeave(id);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping(path = "/leaves/{id}")
+    public ResponseEntity<Void> deleteLeaveById( @PathVariable (name = "id") int id)
+    {
+        leaveService.deleteLeaveById(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping(path = "/approveleaves/{id}")
     public ResponseEntity<LeaveDTO> approveLeave(@Valid @RequestBody LeaveDTO leaveDTO,@PathVariable (name = "id") int id)
     {
@@ -144,17 +162,24 @@ public class LeaveController {
         leaveDTO = leaveService.rejectLeave(id,leaveDTO);
         return new ResponseEntity<>(leaveDTO, HttpStatus.OK);
     }
+    
+    @GetMapping("/calculateLeaveDays/{startDate}/{endDate}")
+    public ResponseEntity<Long> leavesCalci(@PathVariable(name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate, @PathVariable(name = "endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate){
+    	
+    	Long calculateDays =  leaveService.calculateDays(startDate, endDate);
+    	return new ResponseEntity<>(calculateDays,HttpStatus.OK);
+    }
+
+    @GetMapping("/leavesummary/{id}")
+    public ResponseEntity<LeaveSummuryDTO> leaveSummary(@PathVariable (name = "id") String id){
+    	LeaveSummuryDTO leaveSummary = leaveService.leaveSummary(id);
+    	return new ResponseEntity<LeaveSummuryDTO>(leaveSummary,HttpStatus.OK);
+    }
 
     @GetMapping (path = "/profile")
     public Optional<Resource> getProfile()
     {
         return resourceRepository.findByEmailAddress(jwtUtil.extractUsernameFromRequest());
-    }
-    @DeleteMapping(path = "/leaves/{id}")
-    public ResponseEntity<Void> deleteLeave( @PathVariable (name = "id") int id)
-    {
-    	leaveService.deleteLeave(id);
-    	return ResponseEntity.ok().build();
     }
 }
 

@@ -17,12 +17,12 @@ create table public.leave_table
     transaction_status varchar(255),
     approver_comments  varchar(255),
     approver_id        varchar(255),
-    contact_address    varchar(255),
+    contact_address    varchar(1000),
     contact_phone      varchar(255),
     delete_flag        boolean,
     description        varchar(255),
     end_date           timestamp,
-    name               varchar(255),
+    leave_name         varchar(255),
     number_of_days     integer,
     pay_percentage     integer,
     resource_id        varchar(255),
@@ -33,6 +33,7 @@ create table public.leave_table
     COLLEAGUE_NAME     varchar(255),
     COLLEAGUE_EMAIL		varchar(255),
     COLLEAGUE_CONTACT  integer
+    notes  			   varchar(2000)
 );
 
 alter table public.leave_table
