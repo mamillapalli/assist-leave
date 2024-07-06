@@ -47,7 +47,7 @@ public class LeaveDTO {
     private String assistLogo;
 
     public void setApprover(List<ApproverDTO> approverInfo){
-        approverId = approverInfo == null || approverInfo.isEmpty() ? approverId : approverInfo.get(0).getEmail();
+        approverId = approverInfo == null || approverInfo.isEmpty() ? approverId : approverInfo.get(0).getItemName();
     }
 
 }

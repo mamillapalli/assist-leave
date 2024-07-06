@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApproverDTO {
     private String id;
-    private String email;
+    private String itemName;
+    private String name;
 }
