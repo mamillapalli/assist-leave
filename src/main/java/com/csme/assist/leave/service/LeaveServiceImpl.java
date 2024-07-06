@@ -56,8 +56,7 @@ public class LeaveServiceImpl implements LeaveService {
         if(leave.size()==0) throw new RuntimeException("There are no pending leave request currently in the system");
         return leaveMapper.leaveToLeaveDTOs(leave);
     }
-
-
+    
     @Override
     public List<LeaveDTO> getLeavesByResourceId(String id) {
         List<Leave> leave = null;
@@ -78,6 +77,7 @@ public class LeaveServiceImpl implements LeaveService {
 
         //return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByResourceId(id).orElseThrow(() -> new ResourceNotFoundException("Resource with id " + id + " not found")));
     }
+    
 
     @Override
     public List<LeaveDTO> getLeavesByResourceIdAndStatus(String id,TransactionStatusEnum transactionStatus) {
@@ -140,7 +140,12 @@ public class LeaveServiceImpl implements LeaveService {
         existingUserDetails.setApproverComments(leaveDTO.getApproverComments());
         Leave savedUser = leaveRepository.save(existingUserDetails);
        if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
-        return leaveMapper.leaveToLeaveDTO(savedUser);
+       
+	       LeaveDTO approvedLeaveDTO = leaveMapper.leaveToLeaveDTO(savedUser);
+	       approvedLeaveDTO.setApproverName(leaveDTO.getApproverName());
+	       approvedLeaveDTO.setLeaveSeekerName(leaveDTO.getLeaveSeekerName());
+	      // approvedLeaveDTO.setApprover(leaveDTO.getApprover());
+        return approvedLeaveDTO;
     }
 
     @Override
@@ -155,7 +160,11 @@ public class LeaveServiceImpl implements LeaveService {
         existingUserDetails.setApproverComments(leaveDTO.getApproverComments());
         Leave savedUser = leaveRepository.save(existingUserDetails);
         if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
-        return leaveMapper.leaveToLeaveDTO(savedUser);
+        
+        LeaveDTO rejectLeaveDTO = leaveMapper.leaveToLeaveDTO(savedUser);
+        rejectLeaveDTO.setApproverName(leaveDTO.getApproverName());
+        rejectLeaveDTO.setLeaveSeekerName(leaveDTO.getLeaveSeekerName());
+        return rejectLeaveDTO;
     }
 
 	@Override
@@ -164,7 +173,6 @@ public class LeaveServiceImpl implements LeaveService {
 			throw new ResourceNotFoundException("Leave is not exist with ID - "+id);
 		leaveRepository.deleteById(id);
 		}
-	
 
 //    @Override
 //    public List<LeaveDTO> getPendingLeavesByApproverId(int id) {
