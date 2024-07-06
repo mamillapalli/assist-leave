@@ -19,6 +19,8 @@ public interface LeaveRepository extends JpaRepository<Leave, Integer> {
     List<Leave> findByResourceIdOrTransactionStatus(String id,TransactionStatusEnum transactionStatusEnum);
 
     List<Leave> findByResourceIdAndTransactionStatus(String id,TransactionStatusEnum transactionStatus);
+    List<Leave> findByResourceIdAndStatus(String id,StatusEnum status);
+
 
     List<Leave> findByTransactionStatus(TransactionStatusEnum transactionStatus);
 
