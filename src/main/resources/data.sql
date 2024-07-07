@@ -36,7 +36,40 @@ create table public.leave_table
     notes  			   varchar(2000)
 );
 
-alter table public.leave_table
+create table public.leave_table
+(
+    leave_id           integer not null
+        constraint leave_table_pkey
+            primary key,
+    authorisation_date timestamp,
+    authorised_user    varchar(255),
+    created_date       timestamp,
+    created_user       varchar(255),
+    modified_date      timestamp,
+    modified_user      varchar(255),
+    transaction_status varchar(255),
+    approver_comments  varchar(255),
+    approver_id        varchar(255),
+    contact_address    varchar(1000),
+    contact_phone      varchar(255),
+    delete_flag        boolean,
+    description        varchar(255),
+    end_date           timestamp,
+    leave_name         varchar(255),
+    number_of_days     integer,
+    pay_percentage     integer,
+    resource_id        varchar(255),
+    start_date         timestamp,
+    status             varchar(255),
+    tickets_paid       boolean,
+    tickets_to         varchar(255),
+    COLLEAGUE_NAME     varchar(255),
+    COLLEAGUE_EMAIL		varchar(255),
+    COLLEAGUE_CONTACT  integer,
+    notes  			   varchar(2000)
+);
+
+alter table public.deleted_leave_table
     owner to postgres;
 
 --delete from admin.resource_table;

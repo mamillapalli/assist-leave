@@ -26,7 +26,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class  Leave extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

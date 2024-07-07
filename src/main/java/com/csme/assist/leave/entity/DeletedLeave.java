@@ -57,6 +57,12 @@ public class  DeletedLeave extends Base {
 	    private String approverComments;
 	    @Column(name = "DELETE_FLAG")
 	    private boolean deleteFlag;
+		@Column(name = "COLLEAGUE_NAME")
+		private String colleagueName;
+		@Column(name = "COLLEAGUE_EMAIL")
+		private String colleagueEmail;
+		@Column(name = "COLLEAGUE_CONTACT")
+		private long colleagueContact;
 	    @Column(name = "notes")
 	    private String notes;
 
