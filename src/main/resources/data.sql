@@ -32,7 +32,7 @@ create table public.leave_table
     tickets_to         varchar(255),
     COLLEAGUE_NAME     varchar(255),
     COLLEAGUE_EMAIL		varchar(255),
-    COLLEAGUE_CONTACT  integer,
+    COLLEAGUE_CONTACT  varchar(15),
     notes  			   varchar(2000)
 );
 
@@ -65,7 +65,7 @@ create table public.leave_table
     tickets_to         varchar(255),
     COLLEAGUE_NAME     varchar(255),
     COLLEAGUE_EMAIL		varchar(255),
-    COLLEAGUE_CONTACT  integer,
+    COLLEAGUE_CONTACT  varchar(15),
     notes  			   varchar(2000)
 );
 

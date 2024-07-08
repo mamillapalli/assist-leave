@@ -173,6 +173,9 @@ public class LeaveServiceImpl implements LeaveService {
         leave.setNumberOfDays(leaveDTO.getNumberOfDays());
         leave.setPayPercentage(leaveDTO.getPayPercentage());
         leave.setTicketsPaid(leaveDTO.isTicketsPaid());
+        leave.setColleagueContact(leaveDTO.getColleagueContact());
+        leave.setColleagueEmail(leave.getColleagueEmail());
+        leave.setColleagueName(leave.getColleagueName());
         Leave updatedLeave = leaveRepository.save(leave);
         return leaveMapper.leaveToLeaveDTO(updatedLeave);
     }

@@ -69,7 +69,7 @@ public class  Leave extends Base {
     @Column(name = "COLLEAGUE_EMAIL")
     private String colleagueEmail;
     @Column(name = "COLLEAGUE_CONTACT")
-    private long colleagueContact;
+    private String colleagueContact;
     @Column(name = "notes")
     private String notes;
 

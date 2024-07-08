@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM openjdk:17-jdk-slim-buster
 # Set the working directory in the container
 WORKDIR /app
 # Copy the built JAR file from the previous stage to the container
