@@ -37,7 +37,7 @@ public class LeaveDTO {
     private boolean deleteFlag;
     private String colleagueName;
     private String colleagueEmail;
-    private long colleagueContact;
+    private String colleagueContact;
     private TransactionStatusEnum transactionStatus;
     
     private String leaveSeekerName;
