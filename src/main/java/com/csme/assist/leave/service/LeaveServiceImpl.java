@@ -2,6 +2,7 @@ package com.csme.assist.leave.service;
 
 import com.csme.assist.leave.entity.DeletedLeave;
 import com.csme.assist.leave.entity.Leave;
+import com.csme.assist.leave.entity.Resource;
 import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.csme.assist.leave.jwtauthentication.configuration.service.JWTUtil;
@@ -47,6 +48,9 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Autowired
     JWTUtil jwtUtil;
+    
+    @Autowired
+    ResourceService resourceService;
 
     @Value("${leave.weekends}")
     String weekends;
@@ -76,7 +80,7 @@ public class LeaveServiceImpl implements LeaveService {
         } else {
             leave = leaveRepository.findByTransactionStatus(transactionStatus);
         }
-        if (leave.size() == 0) throw new RuntimeException("There are no pending leave request currently in the system");
+        if (leave.size() == 0) throw new ResourceNotFoundException("There are no pending leave request currently in the system");
         return leaveMapper.leaveToLeaveDTOs(leave);
     }
     
@@ -95,7 +99,7 @@ public class LeaveServiceImpl implements LeaveService {
         //leave = leaveRepository.findByResourceId(id);
         leave = leaveRepository.findByResourceIdAndApproverIdOrStatus(id, id, StatusEnum.WAITING);
         if (leave.size() == 0)
-            throw new RuntimeException("Leave with resource " + id + " does not exist");
+            throw new ResourceNotFoundException("Leave with resource " + id + " does not exist");
         return leaveMapper.leaveToLeaveDTOs(leave);
 
         //return leaveMapper.leaveToLeaveDTOs(leaveRepository.findByResourceId(id).orElseThrow(() -> new ResourceNotFoundException("Resource with id " + id + " not found")));
@@ -105,14 +109,14 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public List<LeaveDTO> getLeavesByResourceIdAndTransactionStatus(String id, TransactionStatusEnum transactionStatus) {
         List<Leave> leave = leaveRepository.findByResourceIdAndTransactionStatus(id, transactionStatus);
-        if (leave.size() == 0) throw new RuntimeException("There are no pending leave request currently in the system");
+        if (leave.size() == 0) throw new ResourceNotFoundException("There are no pending leave request currently in the system");
         return leaveMapper.leaveToLeaveDTOs(leave);
     }
 
     @Override
     public List<LeaveDTO> getLeavesByResourceIdAndStatus(String id, StatusEnum status) {
         List<Leave> leave = leaveRepository.findByResourceIdAndStatus(id, status);
-        if (leave.size() == 0) throw new RuntimeException("There are no pending leave request currently in the system");
+        if (leave.size() == 0) throw new ResourceNotFoundException("There are no pending leave request currently in the system");
         return leaveMapper.leaveToLeaveDTOs(leave);
     }
 
@@ -168,24 +172,65 @@ public class LeaveServiceImpl implements LeaveService {
         leave.setStatus(StatusEnum.WAITING);
         leave.setTransactionStatus(TransactionStatusEnum.PENDING);
         leave.setContactPhone(leaveDTO.getContactPhone());
-        leave.setEndDate(leaveDTO.getEndDate());
-        leave.setStartDate(leaveDTO.getStartDate());
-        leave.setNumberOfDays(leaveDTO.getNumberOfDays());
+        //leave.setNumberOfDays(leaveDTO.getNumberOfDays());
+        
         leave.setPayPercentage(leaveDTO.getPayPercentage());
         leave.setTicketsPaid(leaveDTO.isTicketsPaid());
         leave.setColleagueContact(leaveDTO.getColleagueContact());
         leave.setColleagueEmail(leaveDTO.getColleagueEmail());
         leave.setColleagueName(leaveDTO.getColleagueName());
-        Leave updatedLeave = leaveRepository.save(leave);
-        return leaveMapper.leaveToLeaveDTO(updatedLeave);
+        
+        
+        
+        if(!leaveDTO.getStartDate().isEqual(leave.getStartDate()) || !leaveDTO.getEndDate().isEqual(leave.getEndDate())) {
+        leaveDTO.setPreviousStartDate(leave.getStartDate());
+        leave.setStartDate(leaveDTO.getStartDate());
+        leaveDTO.setPreviousEndDate(leave.getEndDate());
+        leave.setEndDate(leaveDTO.getEndDate());
+        }
+        
+        
+        if(!leaveDTO.getDescription().equals(leave.getDescription())) {
+        leaveDTO.setPreviousDescription(leave.getDescription());
+        leave.setDescription(leaveDTO.getDescription());
+        }
+        
+        int prevLeaves = leave.getNumberOfDays();
+        leave.setNumberOfDays(calculateDays(leave.getStartDate(), leave.getEndDate()).intValue());
+        
+        leaveDTO.setPreviousNumberOfDays(prevLeaves);
+        leaveDTO.setId(leave.getId());
+        leaveDTO.setStatus(leave.getStatus());
+        leaveDTO.setTransactionStatus(leave.getTransactionStatus());
+        leaveDTO.setNumberOfDays(leave.getNumberOfDays());
+        
+        
+        
+        leaveRepository.save(leave);
+        
+        return leaveDTO;
     }
 
     @Override
-    public void deleteLeave(int id) {
+    public LeaveDTO deleteLeave(int id) {
         leaveRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + id + " not found"));
         Leave leave = leaveRepository.findById(id).get();
+        
+        LeaveDTO existedLeaveDTO = leaveMapper.leaveToLeaveDTO(leave);
+        
+        String resourceEmail = existedLeaveDTO.getResourceId();
+        String approverEmail = existedLeaveDTO.getApproverId();
+        Resource seeker = resourceService.findByEmail(resourceEmail);
+        Resource approver = resourceService.findByEmail(approverEmail);
+        existedLeaveDTO.setLeaveSeekerName(seeker.getFirstName());
+        existedLeaveDTO.setApproverName(approver.getFirstName());
+        
+        
+        leave.setStatus(StatusEnum.DELETED);
         deletedLeaveRepository.save(deleteLeaveMapper.leaveToDeletedLeave(leave));
         leaveRepository.deleteById(id);
+        
+        return existedLeaveDTO;
     }
 
     @Override

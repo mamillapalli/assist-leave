@@ -124,10 +124,10 @@ public class LeaveController {
     }
 
     @DeleteMapping(path = "/leaves/{id}")
-    public ResponseEntity<LeaveDTO> deleteLeave(@PathVariable (name = "id") int id)
+    public ResponseEntity<Void> deleteLeave(@PathVariable (name = "id") int id)
     {
         leaveService.deleteLeave(id);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return ResponseEntity.ok().build();
     }
 
 

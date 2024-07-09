@@ -42,10 +42,16 @@ public class LeaveDTO {
     
     private String leaveSeekerName;
     private String approverName;
-    private String assistLogo;
-
-    public void setApprover(List<ApproverDTO> approverInfo){
-        approverId = approverInfo == null || approverInfo.isEmpty() ? approverId : approverInfo.get(0).getItemName();
-    }
+   // private String assistLogo;
+    
+	
+	  private String previousDescription;
+	  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" ,timezone = "Asia/Dubai")
+	  private LocalDate previousStartDate;
+	  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" ,timezone = "Asia/Dubai")
+	  private LocalDate previousEndDate;
+	  private int  previousNumberOfDays;
+	 
+    
 
 }

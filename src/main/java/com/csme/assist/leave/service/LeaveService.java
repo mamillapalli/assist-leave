@@ -30,7 +30,7 @@ public interface LeaveService {
 
     LeaveDTO updateLeave(int id , LeaveDTO leaveDTO);
     
-    void deleteLeave(int id);
+    LeaveDTO deleteLeave(int id);
 
     LeaveDTO approveLeave(int id,LeaveDTO leaveDTO);
 

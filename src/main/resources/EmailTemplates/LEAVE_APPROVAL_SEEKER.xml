@@ -12,6 +12,7 @@
 <p>Employee Name: <%leaveSeekerName%></p><br>
 <p>Leave Duration: <%startDate%> to <%endDate%></p><br>
 <p>Total Days: <%numberOfDays%></p><br>
+<p>Reason for Leave:<%description%></p><br><br>
 
 <%assistLogo%><br>
 Assist Leave Notification.]]></mailContent>

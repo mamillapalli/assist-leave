@@ -95,6 +95,22 @@ public class NotificationServiceImpl implements NotificationService {
 
         notificationRepository.save(notification);
     }
+    
+	@Override
+	public void deleteLeave(Object object, NotificationEvent notificationEvent) throws JsonProcessingException {
+
+        Notification notification = Notification.builder()
+                .notificationStatus(NotificationStatusEnum.INITIATED)
+                .uuid(UUID.randomUUID())
+                .transactionInformation(objectMapper.writeValueAsString(object))
+                .notificationEvent(notificationEvent)
+                .build();
+        Base baseDetails = objectMapper.readValue(objectMapper.writeValueAsString(object), Base.class);
+        notification.setModificationDetails(jwtUtil.extractUsernameFromRequest());
+ 
+        notificationRepository.save(notification);
+
+	}
 
     public boolean prepareForSend(Notification notification) {
 
@@ -118,4 +134,6 @@ public class NotificationServiceImpl implements NotificationService {
 
         return true;
     }
+
+
 }

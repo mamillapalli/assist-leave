@@ -9,7 +9,7 @@
 
 <p>A Leave request is awaiting approval with the following details</p><br>
 <p>Details of the Leave:</p><br><br>
-<p>Employee Name: <%approverName%></p><br>
+<p>Employee Name: <%leaveSeekerName%></p><br>
 <p>Leave Duration: <%startDate%> to <%endDate%></p><br>
 <p>Total Days: <%numberOfDays%></p><br>
 <p>Reason for Leave:<%description%></p><br><br>

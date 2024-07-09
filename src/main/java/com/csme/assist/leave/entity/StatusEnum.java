@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum StatusEnum {
-    WAITING,APPROVED,REJECTED;
+    WAITING,APPROVED,REJECTED,DELETED;
 
     private static Map<String, StatusEnum> valueMap;
 

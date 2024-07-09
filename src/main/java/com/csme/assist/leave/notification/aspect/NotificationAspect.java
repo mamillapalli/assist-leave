@@ -31,7 +31,9 @@ public class NotificationAspect {
             "within(com.csme.assist.leave.service.LeaveService+) && execution(* addLeave(..))" +
                     "|| within(com.csme.assist.leave.service.LeaveService+) && execution(* updateLeave(..))" +
                     "|| within(com.csme.assist.leave.service.LeaveService+) && execution(* approveLeave(..))" +
-                    "|| within(com.csme.assist.leave.service.LeaveService+) && execution(* rejectLeave(..))"
+                    "|| within(com.csme.assist.leave.service.LeaveService+) && execution(* rejectLeave(..))" +
+                    "|| within(com.csme.assist.leave.service.LeaveService+) && execution(* deleteLeave(..))"
+                    
     )
 
     public void notificationPointcut() {
@@ -57,7 +59,8 @@ public class NotificationAspect {
                         notificationService.addLeave(result, NotificationEvent.LEAVE_CREATION_SEEKER);
                         break;
                     case "updateLeave":
-                        notificationService.updateLeave(result, NotificationEvent.LEAVE_MODIFICATION);
+                        notificationService.updateLeave(result, NotificationEvent.LEAVE_MODIFICATION_APPROVER);
+                        notificationService.updateLeave(result, NotificationEvent.LEAVE_MODIFICATION_SEEKER);
                         break;
                     case "approveLeave":
                         notificationService.approveLeave(result, NotificationEvent.LEAVE_APPROVAL_APPROVER);
@@ -67,6 +70,11 @@ public class NotificationAspect {
                         notificationService.rejectLeave(result, NotificationEvent.LEAVE_REJECTION_APPROVER);
                         notificationService.rejectLeave(result, NotificationEvent.LEAVE_REJECTION_SEEKER);
                         break;
+                    case "deleteLeave":
+                    	
+                    	notificationService.deleteLeave(result, NotificationEvent.LEAVE_DELETION_APPROVER);
+                    	notificationService.deleteLeave(result, NotificationEvent.LEAVE_DELETION_SEEKER);
+
                 }
             } catch (JsonProcessingException e) {
                 e.printStackTrace();

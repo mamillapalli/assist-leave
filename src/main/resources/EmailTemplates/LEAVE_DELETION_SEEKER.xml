@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+<toAddress><![CDATA[<%approverId%>]]></toAddress>
+<ccAddress><![CDATA[ravikanthm@gmail.com]]></ccAddress>
+<bccAddress><![CDATA[raghu.doddla@gmail.com]]></bccAddress>
+<mailSubject><![CDATA[Deletion of leave Application for <%leaveSeekerName%>  from <%startDate%> - <%endDate%>]]></mailSubject>
+<fromAddress/>
+<mailContent><![CDATA[Dear <%leaveSeekerName%>,<br><br>
+ 
+ 
+<p>A Leave request awaiting approval, has been deleted with the following details</p><br>
+<p>Details of the Leave request:</p><br><br>
+<p>Employee Name: <%leaveSeekerName%></p><br>
+<p>Leave Duration: <%startDate%> to <%endDate%></p><br>
+<p>Total Days: <%numberOfDays%></p><br>
+<p>Reason for Leave:<%description%></p><br><br>
+
+ 
+ 
+<%assistLogo%><br>
+Assist Leave Notification.]]></mailContent>
+</root>

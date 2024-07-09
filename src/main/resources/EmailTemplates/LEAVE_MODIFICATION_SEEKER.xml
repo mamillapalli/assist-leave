@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+<toAddress><![CDATA[<%approverId%>]]></toAddress>
+<ccAddress><![CDATA[ravikanthm@gmail.com]]></ccAddress>
+<bccAddress><![CDATA[raghu.doddla@gmail.com]]></bccAddress>
+<mailSubject><![CDATA[Modificaiton of leave Application  for <%leaveSeekerName%> from <%previousStartDate%>- <%previousEndDate%> to <%startDate%>-<%endDate%>]]></mailSubject>
+<fromAddress/>
+<mailContent><![CDATA[Dear <%leaveSeekerName%>,<br><br>
+<p>The following email is sent to <%approverName%> </p><br>
+<p> ---------------</p><br><br>
+<p>Dear <%approverName%>,</p><br>
+<p>A Leave request awaiting approval, has been modified with the following details</p><br>
+ 
+<p>Details of the Leave requested previously:</p><br><br>
+<p>Employee Name: <%leaveSeekerName%></p><br>
+<p>Leave Duration: <%previousStartDate%> to <%previousEndDate%></p><br>
+<p>Total Days: <%previousNumberOfDays%></p><br>
+<p>Reason for Leave:<%previousDescription%></p><br><br>
+ 
+<p>Details of the Modified Leave request:</p><br>
+<p>Employee Name: <%leaveSeekerName%></p><br>
+<p>Leave Duration: <%startDate%> to <%endDate%></p><br>
+<p>Total Days: <%numberOfDays%></p><br>
+<p>Reason for Leave:<%description%></p><br><br>
+ 
+ 
+<p>Work Handover:</p><br>
+<p><%colleagueName%> will be handling my duties during my absence and can be reached at <%colleagueEmail%>/<%colleagueContact%> for any urgent matters.</p><br>
+<p>Should there be any emergencies or if further clarification is needed, I can be reached at <%contactPhone%>.</p><br>
+ 
+<%assistLogo%><br>
+Assist Leave Notification.]]></mailContent>
+ 
+ 
+</root>

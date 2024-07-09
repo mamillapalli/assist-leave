@@ -17,6 +17,8 @@ public interface NotificationService {
     void approveLeave(Object object, NotificationEvent notificationEvent) throws JsonProcessingException;
 
     void rejectLeave(Object result, NotificationEvent notificationEvent) throws JsonProcessingException;
+    
+    void deleteLeave(Object result, NotificationEvent notificationEvent) throws JsonProcessingException;
 
     boolean prepareForSend(Notification notification);
 
