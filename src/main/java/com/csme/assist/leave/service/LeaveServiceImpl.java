@@ -5,6 +5,8 @@ import com.csme.assist.leave.entity.Leave;
 import com.csme.assist.leave.entity.Resource;
 import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
+import com.csme.assist.leave.exception.LeaveApproveException;
+import com.csme.assist.leave.exception.LeaveSeekerIsApproverException;
 import com.csme.assist.leave.jwtauthentication.configuration.service.JWTUtil;
 import com.csme.assist.leave.model.HolidayDTO;
 import com.csme.assist.leave.model.LeaveDTO;
@@ -67,7 +69,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public LeaveDTO getLeaves(int id) {
         Leave leave = leaveRepository.getById(id);
-        if (leave == null) throw new RuntimeException("Leave with id " + id + " does not exist");
+        if (leave == null) throw new ResourceNotFoundException("Leave with id " + id + " does not exist");
         return leaveMapper.leaveToLeaveDTO(leave);
     }
 
@@ -235,13 +237,25 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public LeaveDTO approveLeave(int userId, LeaveDTO leaveDTO) {
+    	
+    	if(leaveDTO.getResourceId().equals(leaveDTO.getApproverId()))
+    		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
+
+    	String jwtUserEmail = jwtUtil.extractUsernameFromRequest();
+    	
         if (leaveRepository.findById(userId).isEmpty())
-            throw new RuntimeException("Leave with id " + userId + " does not exist");
+            throw new ResourceNotFoundException("Leave with id " + userId + " does not exist");
+        
         Leave existingUserDetails = leaveRepository.findById(userId).get();
-        existingUserDetails.setAuthorizationDetails(jwtUtil.extractUsernameFromRequest());
+    	if(!jwtUserEmail.equals(existingUserDetails.getApproverId())) {
+    		throw new LeaveApproveException(jwtUserEmail, leaveDTO.getApproverId());
+    	}
+
+        
+        existingUserDetails.setAuthorizationDetails(jwtUserEmail);
         existingUserDetails.setStatus(StatusEnum.APPROVED);
         existingUserDetails.setTransactionStatus(TransactionStatusEnum.MASTER);
-        existingUserDetails.setApproverId(jwtUtil.extractUsernameFromRequest());
+        existingUserDetails.setApproverId(jwtUserEmail);
         existingUserDetails.setApproverComments(leaveDTO.getApproverComments());
         Leave savedUser = leaveRepository.save(existingUserDetails);
        if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
@@ -255,7 +269,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public LeaveDTO rejectLeave(int userId, LeaveDTO leaveDTO) {
         if (leaveRepository.findById(userId).isEmpty())
-            throw new RuntimeException("Reject Leave with id " + userId + " does not exist");
+            throw new ResourceNotFoundException("Reject Leave with id " + userId + " does not exist");
         Leave existingUserDetails = leaveRepository.findById(userId).get();
         existingUserDetails.setAuthorizationDetails(jwtUtil.extractUsernameFromRequest());
         existingUserDetails.setStatus(StatusEnum.REJECTED);

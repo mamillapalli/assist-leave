@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import com.csme.assist.leave.exception.LeaveApproveException;
+import com.csme.assist.leave.exception.LeaveSeekerIsApproverException;
 import com.csme.assist.leave.exception.TrishankuException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ExceptionAspect {
 
+	@ExceptionHandler(LeaveSeekerIsApproverException.class)
+	public ResponseEntity<TrishankuException> leaveSeekerIsApproverException(LeaveSeekerIsApproverException ex){
+		
+		return new ResponseEntity<>(new TrishankuException(new Date(), ex.getMessage(), ex.getLocalizedMessage()), HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(LeaveApproveException.class)
+	public ResponseEntity<TrishankuException> leaveApproveException(LeaveApproveException ex){
+		
+		return new ResponseEntity<>(new TrishankuException(new Date(), ex.getMessage(), ex.getLocalizedMessage()), HttpStatus.BAD_REQUEST);
+	}
+	
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         return new ResponseEntity<>(new TrishankuException(new Date(), ex.getMessage(), ex.getLocalizedMessage()), HttpStatus.NOT_FOUND);
