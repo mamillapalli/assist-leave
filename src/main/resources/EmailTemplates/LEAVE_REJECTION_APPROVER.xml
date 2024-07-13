@@ -14,6 +14,6 @@
 <p>Total Days: <%numberOfDays%></p><br>
 <p>Reason for Leave:<%description%></p><br><br>
 
-<%assistLogo%><br>
+<img src='cid:assistLogo' alt='Assist Logo' /><br>
 Assist Leave Notification.]]></mailContent>
 </root>

@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LeaveDTO {
     private int id;
     private String name;
@@ -26,7 +27,6 @@ public class LeaveDTO {
     private int payPercentage;
     private String resourceId;
     private String approverId;
-    @JsonIgnoreProperties(ignoreUnknown = true)
     private List<ApproverDTO> approver;
     private String contactAddress;
     private String contactPhone;
@@ -53,7 +53,10 @@ public class LeaveDTO {
 	  private int  previousNumberOfDays;
 	 
 	  public void setApprover(List<ApproverDTO> approverInfo){
-	        approverId = approverInfo == null || approverInfo.isEmpty() ? approverId : approverInfo.get(0).getItemName();
+		  System.out.println("@@@@@ approverid: "+approverId);
+	        approverId = approverInfo == null || approverInfo.isEmpty() ? approverId : approverInfo.get(0).getItemName()==null?approverId: approverInfo.get(0).getItemName();
+			  System.out.println("@@@@@ approverid: "+approverId);
+
 	    }
     
 }

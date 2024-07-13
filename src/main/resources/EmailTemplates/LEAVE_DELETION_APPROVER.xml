@@ -28,7 +28,7 @@
 
  
  
-<%assistLogo%><br>
+<img src='cid:assistLogo' alt='Assist Logo' /><br>
 
 Assist Leave Notification.]]></mailContent>
 

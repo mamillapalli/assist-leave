@@ -28,7 +28,7 @@
 <p><%colleagueName%> will be handling my duties during my absence and can be reached at <%colleagueEmail%>/<%colleagueContact%> for any urgent matters.</p><br>
 <p>Should there be any emergencies or if further clarification is needed, I can be reached at <%contactPhone%>.</p><br>
  
-<%assistLogo%><br>
+<img src='cid:assistLogo' alt='Assist Logo' /><br>
 Assist Leave Notification.]]></mailContent>
  
  
