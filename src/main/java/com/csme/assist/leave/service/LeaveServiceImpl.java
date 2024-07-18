@@ -385,8 +385,6 @@ public class LeaveServiceImpl implements LeaveService {
 		//if(startDate.)n
 			
 		if(rolesList.contains("LEAVE_ADMIN")) {
-			approverId = null;
-			resourceId = null;
 			return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeaves(status,resourceId,approverId,startDate,endDate));
 		}else if(rolesList.contains("LEAVE_APPROVER")) {
 			 
@@ -394,16 +392,19 @@ public class LeaveServiceImpl implements LeaveService {
 				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");
 			}
 			
-			if(resourceId != null && !resourceId.isEmpty() && resourceId.equals(resourceEmail)) {
-				approverId = null;	
-			} 
-			if(resourceId == null || resourceId.isBlank()) {
-				approverId = resourceEmail;
+			if(resourceId != null && !resourceId.isEmpty()) {
+                if(resourceId.equals(resourceEmail)) {
+                    approverId = null;
+                }else{
+                    approverId = resourceEmail;
+                }
+                return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeaves(status, resourceId, approverId, startDate, endDate));
 			}
-			if(resourceId != null && !resourceId.isEmpty() && !resourceId.equals(resourceEmail)) {
-				approverId = resourceEmail;	
-			} 
-			return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeavesOfApprover(status, resourceId, approverId, startDate, endDate));
+
+            resourceId = resourceEmail;
+            approverId = resourceEmail;
+            return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeavesOfApprover(status, resourceId, approverId, startDate, endDate));
+
 		}else {
 			if(resourceId != null && !resourceId.equals(resourceEmail)) {
 				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");

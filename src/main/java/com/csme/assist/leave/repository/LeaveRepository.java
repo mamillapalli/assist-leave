@@ -50,8 +50,8 @@ public interface LeaveRepository extends JpaRepository<Leave, Integer> {
     
     @Query("SELECT l FROM Leave l WHERE " +
             "(:status IS NULL OR l.status = :status) AND " +
-            "(:approverId IS NOT NULL AND l.approverId = :approverId) OR " +
-            "(:approverId IS NULL AND l.resourceId = :approverId) AND " +
+            "((:approverId IS NULL OR l.approverId = :approverId) OR " +
+            "(:resourceId IS NULL OR l.resourceId = :resourceId)) AND " +
             "(:startDate IS NULL OR l.startDate >= :startDate) AND " +
             "(:endDate IS NULL OR l.endDate <= :endDate)")
      List<Leave> getAllLeavesOfApprover(@Param("status") String status,
