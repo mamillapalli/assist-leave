@@ -3,10 +3,12 @@ package com.csme.assist.leave.service;
 import com.csme.assist.leave.entity.DeletedLeave;
 import com.csme.assist.leave.entity.Leave;
 import com.csme.assist.leave.entity.Resource;
+import com.csme.assist.leave.entity.Role;
 import com.csme.assist.leave.entity.StatusEnum;
 import com.csme.assist.leave.entity.TransactionStatusEnum;
 import com.csme.assist.leave.exception.LeaveApproveException;
 import com.csme.assist.leave.exception.LeaveSeekerIsApproverException;
+import com.csme.assist.leave.exception.UnauthorizedException;
 import com.csme.assist.leave.jwtauthentication.configuration.service.JWTUtil;
 import com.csme.assist.leave.model.HolidayDTO;
 import com.csme.assist.leave.model.LeaveDTO;
@@ -91,14 +93,7 @@ public class LeaveServiceImpl implements LeaveService {
         List<Leave> leave = null;
         System.out.println("roles is :" + jwtUtil.extractRolesFromRequest());
         String rolesValue = jwtUtil.extractRolesFromRequest();
-        List<String> list = Arrays.asList(rolesValue.split(","));
-//        if (list.contains("LEAVE_ADMIN") || list.contains("LEAVE_APPROVER")) {
-//            leave = leaveRepository.findByResourceIdOrTransactionStatus(id,TransactionStatusEnum.PENDING);
-//        } else {
-//            leave = leaveRepository.findByResourceId(id);
-//
-//        }
-        //leave = leaveRepository.findByResourceId(id);
+
         leave = leaveRepository.findByResourceIdAndApproverIdOrStatus(id, id, StatusEnum.WAITING);
         if (leave.size() == 0)
             throw new ResourceNotFoundException("Leave with resource " + id + " does not exist");
@@ -137,6 +132,33 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public LeaveDTO addLeave(LeaveDTO leaveDTO) {
+    	String resourceEmail = jwtUtil.extractUsernameFromRequest();
+    	if(!resourceEmail.equals(leaveDTO.getResourceId())) {
+    		throw new UnauthorizedException("Resource is not Authorized to make the request");
+    	}
+    	if(leaveDTO.getColleagueEmail().equals(leaveDTO.getResourceId())){
+    		throw new UnauthorizedException("Leave appliar should not be a Colleague");
+    	}
+    	if(leaveDTO.getPayPercentage()>100) {
+    		throw new UnauthorizedException("Paypercentage should not be greater than 100");
+    	}
+    	//check approverid has the approver_role
+    	Resource approverResource = resourceService.findByEmail(leaveDTO.getApproverId());
+    	List<Role> approverRoles = approverResource.getRoles();
+    	System.out.println("!!!!! approverRoles - "+approverRoles);
+    	List<String> rolesList=new ArrayList<String>();
+    	approverRoles.forEach(role->{
+    		rolesList.add(role.getName());
+    	});
+    	System.out.println("rolesList -"+rolesList);
+    	if(rolesList == null || !rolesList.contains("LEAVE_APPROVER")) {
+    		throw new UnauthorizedException("Approver does not have LEAVE_APPROVER role");
+    	}
+    	
+    	
+    	if(leaveDTO.getResourceId().equals(leaveDTO.getApproverId()))
+    		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
+    	
         Leave leave = leaveMapper.leaveDTOToLeave(leaveDTO);
         leave.setStatus(StatusEnum.WAITING);
         leave.setTransactionStatus(TransactionStatusEnum.PENDING);
@@ -167,10 +189,18 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public LeaveDTO updateLeave(int userId, LeaveDTO leaveDTO) {
-        Leave leave = leaveRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + userId + " not found"));
-        leave.setApproverId(leaveDTO.getApproverId());
-        leave.setContactAddress(leaveDTO.getContactAddress());
+    public LeaveDTO updateLeave(int leaveId, LeaveDTO leaveDTO) {
+    	String resourceEmail = jwtUtil.extractUsernameFromRequest();
+    	if(!resourceEmail.equals(leaveDTO.getResourceId())) {
+    		throw new UnauthorizedException("Resource is not Authorized to make the request");
+    	}
+        Leave leave = leaveRepository.findById(leaveId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + leaveId + " not found"));
+       // leave.setApproverId(leaveDTO.getApproverId());
+       //leave.setContactAddress(leaveDTO.getContactAddress());
+        
+        if(leaveDTO.getColleagueEmail().equals(leaveDTO.getResourceId())){
+    		throw new UnauthorizedException("Leave appliar should not be a Colleague");
+    	}
         leave.setStatus(StatusEnum.WAITING);
         leave.setTransactionStatus(TransactionStatusEnum.PENDING);
         leave.setContactPhone(leaveDTO.getContactPhone());
@@ -215,15 +245,17 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public LeaveDTO deleteLeave(int id) {
-        leaveRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + id + " not found"));
-        Leave leave = leaveRepository.findById(id).get();
+    	
+    	Leave leave =leaveRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + id + " not found"));
+        String resourceEmail = jwtUtil.extractUsernameFromRequest();
+        if(!resourceEmail.equals(leave.getResourceId())) {
+        	throw new UnauthorizedException("Resource is not Authorized to make this request");
+        }
         
         LeaveDTO existedLeaveDTO = leaveMapper.leaveToLeaveDTO(leave);
         
-        String resourceEmail = existedLeaveDTO.getResourceId();
-        String approverEmail = existedLeaveDTO.getApproverId();
         Resource seeker = resourceService.findByEmail(resourceEmail);
-        Resource approver = resourceService.findByEmail(approverEmail);
+        Resource approver = resourceService.findByEmail(existedLeaveDTO.getApproverId());
         existedLeaveDTO.setLeaveSeekerName(seeker.getFirstName());
         existedLeaveDTO.setApproverName(approver.getFirstName());
         
@@ -236,28 +268,24 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public LeaveDTO approveLeave(int userId, LeaveDTO leaveDTO) {
+    public LeaveDTO approveLeave(int leaveId, LeaveDTO leaveDTO) {
     	
-    	if(leaveDTO.getResourceId().equals(leaveDTO.getApproverId()))
-    		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
-
+    	Leave existingLeaveDetails =leaveRepository.findById(leaveId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + leaveId + " not found"));
+    	
     	String jwtUserEmail = jwtUtil.extractUsernameFromRequest();
-    	
-        if (leaveRepository.findById(userId).isEmpty())
-            throw new ResourceNotFoundException("Leave with id " + userId + " does not exist");
+    	if(existingLeaveDetails.getResourceId().equals(jwtUserEmail))
+    		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
         
-        Leave existingUserDetails = leaveRepository.findById(userId).get();
-    	if(!jwtUserEmail.equals(existingUserDetails.getApproverId())) {
+    	if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId())) {
     		throw new LeaveApproveException(jwtUserEmail, leaveDTO.getApproverId());
     	}
 
-        
-        existingUserDetails.setAuthorizationDetails(jwtUserEmail);
-        existingUserDetails.setStatus(StatusEnum.APPROVED);
-        existingUserDetails.setTransactionStatus(TransactionStatusEnum.MASTER);
-        existingUserDetails.setApproverId(jwtUserEmail);
-        existingUserDetails.setApproverComments(leaveDTO.getApproverComments());
-        Leave savedUser = leaveRepository.save(existingUserDetails);
+        existingLeaveDetails.setAuthorizationDetails(jwtUserEmail);
+        existingLeaveDetails.setStatus(StatusEnum.APPROVED);
+        existingLeaveDetails.setTransactionStatus(TransactionStatusEnum.MASTER);
+        existingLeaveDetails.setApproverId(jwtUserEmail);
+        existingLeaveDetails.setApproverComments(leaveDTO.getApproverComments());
+        Leave savedUser = leaveRepository.save(existingLeaveDetails);
        if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
        
 	       LeaveDTO approvedLeaveDTO = leaveMapper.leaveToLeaveDTO(savedUser);
@@ -267,15 +295,24 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public LeaveDTO rejectLeave(int userId, LeaveDTO leaveDTO) {
-        if (leaveRepository.findById(userId).isEmpty())
-            throw new ResourceNotFoundException("Reject Leave with id " + userId + " does not exist");
-        Leave existingUserDetails = leaveRepository.findById(userId).get();
-        existingUserDetails.setAuthorizationDetails(jwtUtil.extractUsernameFromRequest());
-        existingUserDetails.setStatus(StatusEnum.REJECTED);
-        existingUserDetails.setTransactionStatus(TransactionStatusEnum.PENDING);
-        existingUserDetails.setApproverComments(leaveDTO.getApproverComments());
-        Leave savedUser = leaveRepository.save(existingUserDetails);
+    public LeaveDTO rejectLeave(int leaveId, LeaveDTO leaveDTO) {
+      
+   	Leave existingLeaveDetails =leaveRepository.findById(leaveId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + leaveId + " not found"));
+    	
+    	String jwtUserEmail = jwtUtil.extractUsernameFromRequest();
+    	if(existingLeaveDetails.getResourceId().equals(jwtUserEmail))
+    		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
+        
+        
+        if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId())) {
+        	throw new UnauthorizedException("The resource is not the Approver");
+        }
+        	
+        existingLeaveDetails.setAuthorizationDetails(jwtUtil.extractUsernameFromRequest());
+        existingLeaveDetails.setStatus(StatusEnum.REJECTED);
+        existingLeaveDetails.setTransactionStatus(TransactionStatusEnum.PENDING);
+        existingLeaveDetails.setApproverComments(leaveDTO.getApproverComments());
+        Leave savedUser = leaveRepository.save(existingLeaveDetails);
         if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
         
         LeaveDTO rejectLeaveDTO = leaveMapper.leaveToLeaveDTO(savedUser);
@@ -333,6 +370,51 @@ public class LeaveServiceImpl implements LeaveService {
 		
 		return leaves;
     }
+
+	@Override
+	public List<LeaveDTO> getAll(String status, String resourceId, String approverId, LocalDate startDate,
+			LocalDate endDate) {
+		String resourceEmail = jwtUtil.extractUsernameFromRequest();
+		String rolesFromRequest = jwtUtil.extractRolesFromRequest();
+		System.out.println("~~~~rolesFromRequest - "+rolesFromRequest);
+		List<String> rolesList = Arrays.asList(rolesFromRequest.split(","));
+		// empty check
+		if(status != null && status.isBlank()) status = null;
+		if(resourceId != null && resourceId.isBlank()) resourceId = null;
+		if(approverId != null && approverId.isBlank()) approverId = null;
+		//if(startDate.)n
+			
+		if(rolesList.contains("LEAVE_ADMIN")) {
+			approverId = null;
+			resourceId = null;
+			return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeaves(status,resourceId,approverId,startDate,endDate));
+		}else if(rolesList.contains("LEAVE_APPROVER")) {
+			 
+			if(approverId!=null && !approverId.isEmpty() && !approverId.equals(resourceEmail)) {
+				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");
+			}
+			
+			if(resourceId != null && !resourceId.isEmpty() && resourceId.equals(resourceEmail)) {
+				approverId = null;	
+			} 
+			if(resourceId == null || resourceId.isBlank()) {
+				approverId = resourceEmail;
+			}
+			if(resourceId != null && !resourceId.isEmpty() && !resourceId.equals(resourceEmail)) {
+				approverId = resourceEmail;	
+			} 
+			return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeavesOfApprover(status, resourceId, approverId, startDate, endDate));
+		}else {
+			if(resourceId != null && !resourceId.equals(resourceEmail)) {
+				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");
+			}
+			
+			return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeaves(status, resourceEmail, null, startDate, endDate));
+		}
+		
+		
+	}
+
 
 //    @Override
 //    public List<LeaveDTO> getPendingLeavesByApproverId(int id) {

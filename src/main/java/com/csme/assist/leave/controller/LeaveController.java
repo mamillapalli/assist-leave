@@ -48,11 +48,24 @@ public class LeaveController {
     @Autowired
     JWTUtil jwtUtil;
 
+	/*
+	 * @CrossOrigin(origins = "http://localhost:8001/leaves")
+	 * 
+	 * @GetMapping (path = "/leaves") public ResponseEntity<List<LeaveDTO>>
+	 * getAllLeave() { return new ResponseEntity<>(leaveService.getAll(),
+	 * HttpStatus.OK); }
+	 */
+   
     @CrossOrigin(origins = "http://localhost:8001/leaves")
     @GetMapping (path = "/leaves")
-    public ResponseEntity<List<LeaveDTO>> getAllLeave()
-    {
-        return new ResponseEntity<>(leaveService.getAll(), HttpStatus.OK);
+    public ResponseEntity<List<LeaveDTO>> getLeaves(@RequestParam(name = "status",required = false) String status,
+    		@RequestParam(name = "resourceId",required = false) String resourceId,
+    		@RequestParam(name = "approverId",required = false) String approverId,
+    		@RequestParam(name = "startDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+			@RequestParam(name = "endDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate){
+    	
+
+        return new ResponseEntity<>(leaveService.getAll(status,resourceId,approverId,startDate,endDate), HttpStatus.OK);
     }
 
 

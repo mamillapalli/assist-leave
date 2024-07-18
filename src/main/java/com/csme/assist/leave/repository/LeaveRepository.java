@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,30 @@ public interface LeaveRepository extends JpaRepository<Leave, Integer> {
     List<Leave> findByResourceIdAndApproverIdOrStatus(@Param("resourceId") String resourceId,
                                                       @Param("approverId")String approverId,
                                                       @Param("status")StatusEnum status);
+    
+    @Query("SELECT l FROM Leave l WHERE " +
+            "(:status IS NULL OR l.status = :status) AND " +
+            "(:resourceId IS NULL OR l.resourceId = :resourceId) AND " +
+            "(:approverId IS NULL OR l.approverId = :approverId) AND " +
+            "(:startDate IS NULL OR l.startDate >= :startDate) AND " +
+            "(:endDate IS NULL OR l.endDate <= :endDate)")
+     List<Leave> getAllLeaves(@Param("status") String status,
+                              @Param("resourceId") String resourceId,
+                              @Param("approverId") String approverId,
+                              @Param("startDate") LocalDate startDate,
+                              @Param("endDate") LocalDate endDate);
+    
+    @Query("SELECT l FROM Leave l WHERE " +
+            "(:status IS NULL OR l.status = :status) AND " +
+            "(:approverId IS NOT NULL AND l.approverId = :approverId) OR " +
+            "(:approverId IS NULL AND l.resourceId = :approverId) AND " +
+            "(:startDate IS NULL OR l.startDate >= :startDate) AND " +
+            "(:endDate IS NULL OR l.endDate <= :endDate)")
+     List<Leave> getAllLeavesOfApprover(@Param("status") String status,
+                              @Param("resourceId") String resourceId,
+                              @Param("approverId") String approverId,
+                              @Param("startDate") LocalDate startDate,
+                              @Param("endDate") LocalDate endDate);
 }
 
 

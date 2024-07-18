@@ -18,12 +18,17 @@ import org.springframework.web.context.request.WebRequest;
 import com.csme.assist.leave.exception.LeaveApproveException;
 import com.csme.assist.leave.exception.LeaveSeekerIsApproverException;
 import com.csme.assist.leave.exception.TrishankuException;
+import com.csme.assist.leave.exception.UnauthorizedException;
 
 import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
 @Slf4j
 public class ExceptionAspect {
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<TrishankuException> unauthorizedException(UnauthorizedException ex){
+		return new ResponseEntity<>(new TrishankuException(new Date(), ex.getMessage(), ex.getLocalizedMessage()),HttpStatus.UNAUTHORIZED);
+	}
 
 	@ExceptionHandler(LeaveSeekerIsApproverException.class)
 	public ResponseEntity<TrishankuException> leaveSeekerIsApproverException(LeaveSeekerIsApproverException ex){
