@@ -5,14 +5,14 @@
     <bccAddress><![CDATA[raghu.doddla@gmail.com]]></bccAddress>
     <mailSubject><![CDATA[Leave Application Rejection Notification for <%leaveSeekerName%>]]></mailSubject>
     <fromAddress/>
-    <mailContent><![CDATA[Dear <%leaveSeekerName%>,<br><br>
+    <mailContent><![CDATA[Dear <%leaveSeekerName%>,
 
-<p>This is to inform you that your leave request from <%startDate%> to <%endDate%> has been rejected, by <%approverName%>.</p><br>
-<p>Details of Your Rejected Leave:</p><br><br>
-<p>Employee Name: <%leaveSeekerName%></p><br>
-<p>Leave Duration: <%startDate%> to <%endDate%></p><br>
-<p>Total Days: <%numberOfDays%></p><br>
-<p>Reason for Leave:<%description%></p><br><br>
+<p>This is to inform you that your leave request from <%startDate%> to <%endDate%> has been rejected, by <%approverName%>.</p>
+<p>Details of Your Rejected Leave:</p>
+<p>Employee Name: <%leaveSeekerName%></p>
+<p>Leave Duration: <%startDate%> to <%endDate%></p>
+<p>Total Days: <%numberOfDays%></p>
+<p>Reason for Leave:<%description%></p>
 
 <img src='cid:assistLogo' alt='Assist Logo' /><br>
 Assist Leave Notification.]]></mailContent>

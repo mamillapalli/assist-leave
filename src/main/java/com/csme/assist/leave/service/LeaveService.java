@@ -13,9 +13,9 @@ import java.util.List;
 
 
 public interface LeaveService {
-    List<LeaveDTO> getAll();
+   // List<LeaveDTO> getAll();
 
-    List<LeaveDTO> getAll(String status,String resourceId,String approverId,LocalDate startDate,LocalDate endDate);
+    List<LeaveDTO> getAll(StatusEnum status,String resourceId,String approverId,LocalDate startDate,LocalDate endDate);
     LeaveDTO getLeaves(int id);
 
     List<LeaveDTO> getLeavesByTransactionStatus(TransactionStatusEnum transactionStatus);

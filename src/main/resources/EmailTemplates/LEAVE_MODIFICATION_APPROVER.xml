@@ -5,25 +5,25 @@
 <bccAddress><![CDATA[raghu.doddla@gmail.com]]></bccAddress>
 <mailSubject><![CDATA[Pending Approval of Modified leave request for <%leaveSeekerName%> from <%previousStartDate%>- <%previousEndDate%> to <%startDate%>-<%endDate%>]]></mailSubject>
 <fromAddress/>
-<mailContent><![CDATA[Dear <%approverName%>,<br><br>
-<p>A Leave request awaiting approval, has been modified with the following details </p><br>
+<mailContent><![CDATA[Dear <%approverName%>,
+<p>A Leave request awaiting approval, has been modified with the following details </p>
  
-<p>Details of the Leave requested previously:</p><br><br>
-<p>Employee Name: <%leaveSeekerName%></p><br>
-<p>Leave Duration: <%previousStartDate%> to <%previousEndDate%></p><br>
-<p>Total Days: <%previousNumberOfDays%></p><br>
-<p>Reason for Leave:<%previousDescription%></p><br><br>
+<p>Details of the Leave requested previously:</p>
+<p>Employee Name: <%leaveSeekerName%></p>
+<p>Leave Duration: <%previousStartDate%> to <%previousEndDate%></p>
+<p>Total Days: <%previousNumberOfDays%></p>
+<p>Reason for Leave:<%previousDescription%></p>
  
-<p>Details of the Modified Leave request:</p><br>
-<p>Employee Name: <%leaveSeekerName%></p><br>
-<p>Leave Duration: <%startDate%> to <%endDate%></p><br>
-<p>Total Days: <%numberOfDays%></p><br>
-<p>Reason for Leave:<%description%></p><br><br>
+<p>Details of the Modified Leave request:</p>
+<p>Employee Name: <%leaveSeekerName%></p>
+<p>Leave Duration: <%startDate%> to <%endDate%></p>
+<p>Total Days: <%numberOfDays%></p>
+<p>Reason for Leave:<%description%></p>
  
  
-<p>Work Handover:</p><br>
-<p><%colleagueName%> will be handling my duties during my absence and can be reached at <%colleagueEmail%> / <%colleagueContact%> for any urgent matters.</p><br>
-<p>Should there be any emergencies or if further clarification is needed, I can be reached at <%contactPhone%>.</p><br>
+<p>Work Handover:</p>
+<p><%colleagueName%> will be handling my duties during my absence and can be reached at <%colleagueEmail%> / <%colleagueContact%> for any urgent matters.</p>
+<p>Should there be any emergencies or if further clarification is needed, I can be reached at <%contactPhone%>.</p>
  
 <img src='cid:assistLogo' alt='Assist Logo' /><br>
 Assist Leave Notification.]]></mailContent>

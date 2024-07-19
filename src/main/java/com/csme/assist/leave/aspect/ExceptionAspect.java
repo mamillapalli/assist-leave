@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.csme.assist.leave.exception.LeaveApproveException;
 import com.csme.assist.leave.exception.LeaveSeekerIsApproverException;
@@ -80,8 +81,13 @@ public class ExceptionAspect {
 
                 });
 
-        return new ResponseEntity<>(new TrishankuException(new Date(), message.toString(), ex.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new TrishankuException(new Date(), message.toString(), ex.getLocalizedMessage()), HttpStatus.BAD_REQUEST);
 
+    }
+    
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<TrishankuException> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex){
+		return new ResponseEntity<>(new TrishankuException(new Date(), ex.getMessage(), ex.getLocalizedMessage()),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

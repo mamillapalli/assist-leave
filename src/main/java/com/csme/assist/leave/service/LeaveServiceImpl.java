@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -63,10 +64,10 @@ public class LeaveServiceImpl implements LeaveService {
     @Value("${leave.max-no-of-holidays}")
     int maxNoOfHolidays;
 
-    @Override
-    public List<LeaveDTO> getAll() {
-        return leaveMapper.leaveToLeaveDTOs(leaveRepository.findAll());
-    }
+	/*
+	 * @Override public List<LeaveDTO> getAll() { return
+	 * leaveMapper.leaveToLeaveDTOs(leaveRepository.findAll()); }
+	 */
 
     @Override
     public LeaveDTO getLeaves(int id) {
@@ -191,12 +192,12 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public LeaveDTO updateLeave(int leaveId, LeaveDTO leaveDTO) {
     	String resourceEmail = jwtUtil.extractUsernameFromRequest();
-    	if(!resourceEmail.equals(leaveDTO.getResourceId())) {
-    		throw new UnauthorizedException("Resource is not Authorized to make the request");
-    	}
         Leave leave = leaveRepository.findById(leaveId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + leaveId + " not found"));
        // leave.setApproverId(leaveDTO.getApproverId());
        //leave.setContactAddress(leaveDTO.getContactAddress());
+        if(!resourceEmail.equals(leave.getResourceId())) {
+        	throw new UnauthorizedException("Resource is not Authorized to make the request");
+        }
         
         if(leaveDTO.getColleagueEmail().equals(leaveDTO.getResourceId())){
     		throw new UnauthorizedException("Leave appliar should not be a Colleague");
@@ -285,12 +286,16 @@ public class LeaveServiceImpl implements LeaveService {
         existingLeaveDetails.setTransactionStatus(TransactionStatusEnum.MASTER);
         existingLeaveDetails.setApproverId(jwtUserEmail);
         existingLeaveDetails.setApproverComments(leaveDTO.getApproverComments());
+        //approverName & SeekerName
+        Resource seeker = resourceService.findByEmail(existingLeaveDetails.getResourceId());
+        Resource approver = resourceService.findByEmail(existingLeaveDetails.getApproverId());
+
         Leave savedUser = leaveRepository.save(existingLeaveDetails);
        if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
        
 	       LeaveDTO approvedLeaveDTO = leaveMapper.leaveToLeaveDTO(savedUser);
-	       approvedLeaveDTO.setApproverName(leaveDTO.getApproverName());
-	       approvedLeaveDTO.setLeaveSeekerName(leaveDTO.getLeaveSeekerName());
+	       approvedLeaveDTO.setApproverName(approver.getFirstName());
+	       approvedLeaveDTO.setLeaveSeekerName(seeker.getFirstName());
         return approvedLeaveDTO;
     }
 
@@ -312,12 +317,15 @@ public class LeaveServiceImpl implements LeaveService {
         existingLeaveDetails.setStatus(StatusEnum.REJECTED);
         existingLeaveDetails.setTransactionStatus(TransactionStatusEnum.PENDING);
         existingLeaveDetails.setApproverComments(leaveDTO.getApproverComments());
+        //approverName & SeekerName
+        Resource seeker = resourceService.findByEmail(existingLeaveDetails.getResourceId());
+        Resource approver = resourceService.findByEmail(existingLeaveDetails.getApproverId());
         Leave savedUser = leaveRepository.save(existingLeaveDetails);
         if(savedUser.isDeleteFlag()) leaveRepository.delete(savedUser);
         
         LeaveDTO rejectLeaveDTO = leaveMapper.leaveToLeaveDTO(savedUser);
-        rejectLeaveDTO.setApproverName(leaveDTO.getApproverName());
-        rejectLeaveDTO.setLeaveSeekerName(leaveDTO.getLeaveSeekerName());
+        rejectLeaveDTO.setApproverName(approver.getFirstName());
+        rejectLeaveDTO.setLeaveSeekerName(seeker.getFirstName());
         return rejectLeaveDTO;
     }
 
@@ -372,20 +380,23 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
 	@Override
-	public List<LeaveDTO> getAll(String status, String resourceId, String approverId, LocalDate startDate,
+	public List<LeaveDTO> getAll(StatusEnum status, String resourceId, String approverId, LocalDate startDate,
 			LocalDate endDate) {
+		//Date sDate = startDate == null ? null : Date.valueOf(startDate);
+		//Date eDate = endDate == null ? null : Date.valueOf(endDate);
+		
 		String resourceEmail = jwtUtil.extractUsernameFromRequest();
 		String rolesFromRequest = jwtUtil.extractRolesFromRequest();
 		System.out.println("~~~~rolesFromRequest - "+rolesFromRequest);
 		List<String> rolesList = Arrays.asList(rolesFromRequest.split(","));
 		// empty check
-		if(status != null && status.isBlank()) status = null;
+		//if(status != null && status.isBlank()) status = null;
 		if(resourceId != null && resourceId.isBlank()) resourceId = null;
 		if(approverId != null && approverId.isBlank()) approverId = null;
-		//if(startDate.)n
-			
+
+		System.out.println("___ args :" +status+"\t"+resourceId+"\t"+approverId+"\t"+startDate+"\t"+endDate);
 		if(rolesList.contains("LEAVE_ADMIN")) {
-			return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeaves(status,resourceId,approverId,startDate,endDate));
+			return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeaves(status,resourceId,approverId,startDate, endDate));
 		}else if(rolesList.contains("LEAVE_APPROVER")) {
 			 
 			if(approverId!=null && !approverId.isEmpty() && !approverId.equals(resourceEmail)) {
@@ -398,13 +409,14 @@ public class LeaveServiceImpl implements LeaveService {
                 }else{
                     approverId = resourceEmail;
                 }
+
+
                 return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeaves(status, resourceId, approverId, startDate, endDate));
 			}
 
             resourceId = resourceEmail;
             approverId = resourceEmail;
             return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeavesOfApprover(status, resourceId, approverId, startDate, endDate));
-
 		}else {
 			if(resourceId != null && !resourceId.equals(resourceEmail)) {
 				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");

@@ -58,7 +58,7 @@ public class LeaveController {
    
     @CrossOrigin(origins = "http://localhost:8001/leaves")
     @GetMapping (path = "/leaves")
-    public ResponseEntity<List<LeaveDTO>> getLeaves(@RequestParam(name = "status",required = false) String status,
+    public ResponseEntity<List<LeaveDTO>> getLeaves(@RequestParam(name = "status",required = false) StatusEnum status,
     		@RequestParam(name = "resourceId",required = false) String resourceId,
     		@RequestParam(name = "approverId",required = false) String approverId,
     		@RequestParam(name = "startDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,

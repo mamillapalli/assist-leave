@@ -12,6 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,9 +39,9 @@ public class  Leave extends Base {
     private String name;
     @Column (name ="DESCRIPTION")
     private String description;
-    @Column(name = "START_DATE")
+    @Column(name = "START_DATE", columnDefinition = "DATE")
     private LocalDate startDate;
-    @Column (name = "END_DATE")
+    @Column (name = "END_DATE", columnDefinition = "DATE")
     private LocalDate endDate;
     @Column (name = "NUMBER_OF_DAYS")
     private int numberOfDays;

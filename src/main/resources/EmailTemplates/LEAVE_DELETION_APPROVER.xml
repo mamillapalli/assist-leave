@@ -12,24 +12,17 @@
 
 <fromAddress/>
 
-<mailContent><![CDATA[Dear <%approverName%>,<br><br>
+<mailContent><![CDATA[Dear <%approverName%>,
  
-<p>A Leave request awaiting approval, has been deleted with the following details</p><br>
+<p>A Leave request awaiting approval, has been deleted with the following details</p>
+<p>Details of the Leave request:</p>
+<p>Employee Name: <%leaveSeekerName%></p>
+<p>Leave Duration: <%startDate%> to <%endDate%></p>
+<p>Total Days: <%numberOfDays%></p>
+<p>Reason for Leave:<%description%></p>
 
-<p>Details of the Leave request:</p><br><br>
 
-<p>Employee Name: <%leaveSeekerName%></p><br>
-
-<p>Leave Duration: <%startDate%> to <%endDate%></p><br>
-
-<p>Total Days: <%numberOfDays%></p><br>
-
-<p>Reason for Leave:<%description%></p><br><br>
-
- 
- 
 <img src='cid:assistLogo' alt='Assist Logo' /><br>
-
 Assist Leave Notification.]]></mailContent>
 
 </root>
