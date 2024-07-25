@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.finstack.assist.leave.entity.StatusEnum;
 import com.finstack.assist.leave.entity.TransactionStatusEnum;
@@ -19,6 +20,8 @@ public interface LeaveService {
 
     List<LeaveDTO> getAll(StatusEnum status,String resourceId,String approverId,LocalDate startDate,LocalDate endDate);
     Page<LeaveDTO> getAllLeavesByPaging(StatusEnum status,String resourceId,String approverId,LocalDate startDate,LocalDate endDate, int page, int pageSize);
+    Page<LeaveDTO> getAllLeavesByPaging(StatusEnum status,String resourceId,String approverId,LocalDate startDate,LocalDate endDate, Pageable pageable );
+
 
     LeaveDTO getLeaves(int id);
 

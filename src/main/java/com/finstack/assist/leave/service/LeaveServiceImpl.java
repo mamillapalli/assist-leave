@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import com.finstack.assist.leave.entity.StatusEnum;
 import com.finstack.assist.leave.entity.TransactionStatusEnum;
 import com.finstack.assist.leave.exception.LeaveApproveException;
 import com.finstack.assist.leave.exception.LeaveSeekerIsApproverException;
+import com.finstack.assist.leave.exception.PageOutOfBoundsException;
 import com.finstack.assist.leave.exception.UnauthorizedException;
 import com.finstack.assist.leave.jwtauthentication.configuration.service.JWTUtil;
 import com.finstack.assist.leave.mapper.DeleteLeaveMapper;
@@ -506,6 +508,70 @@ public class LeaveServiceImpl implements LeaveService {
 		
 		
 	
+	}
+
+	@Override
+	public Page<LeaveDTO> getAllLeavesByPaging(StatusEnum status, String resourceId, String approverId,
+			LocalDate startDate, LocalDate endDate, Pageable pageable) {
+		
+		
+		String resourceEmail = jwtUtil.extractUsernameFromRequest();
+		String rolesFromRequest = jwtUtil.extractRolesFromRequest();
+		List<String> rolesList = Arrays.asList(rolesFromRequest.split(","));
+		// empty check
+		if(resourceId != null && resourceId.isBlank()) resourceId = null;
+		if(approverId != null && approverId.isBlank()) approverId = null;
+
+		System.out.println("___ args :" +status+"\t"+resourceId+"\t"+approverId+"\t"+startDate+"\t"+endDate);
+		if(rolesList.contains("LEAVE_ADMIN")) {
+			Page<Leave> allLeavesByPaging = leaveRepository.getAllLeavesByPaging(status,resourceId,approverId,startDate, endDate,pageable);
+			if(pageable.getPageNumber() >= allLeavesByPaging.getTotalPages()) {
+				throw new PageOutOfBoundsException("Requested page number is out of bounds");
+			}
+			System.out.println("allLeavesByPaging ----"+allLeavesByPaging.getSize());
+			allLeavesByPaging.forEach(leave->System.out.println(leave.toString()));
+			return leaveMapper.leavesToLeaveDTOsByPage(allLeavesByPaging);
+		}else if(rolesList.contains("LEAVE_APPROVER")) {
+			 
+			if(approverId!=null && !approverId.isEmpty() && !approverId.equals(resourceEmail)) {
+				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");
+			}
+			
+			if(resourceId != null && !resourceId.isEmpty()) {
+                if(resourceId.equals(resourceEmail)) {
+                    approverId = null;
+                }else{
+                    approverId = resourceEmail;
+                }
+
+                Page<Leave> allLeavesByPaging = leaveRepository.getAllLeavesByPaging(status, resourceId, approverId, startDate, endDate,pageable);
+                if(pageable.getPageNumber() >= allLeavesByPaging.getTotalPages()) {
+                	throw new PageOutOfBoundsException("Requested page number is out of bounds");
+                }
+                return leaveMapper.leavesToLeaveDTOsByPage(allLeavesByPaging);
+			}
+
+            resourceId = resourceEmail;
+            approverId = resourceEmail;
+            Page<Leave> allLeavesOfApproverByPaging = leaveRepository.getAllLeavesOfApproverByPaging(status, resourceId, approverId, startDate, endDate,pageable);
+            if(pageable.getPageNumber() >= allLeavesOfApproverByPaging.getTotalPages()) {
+            	throw new PageOutOfBoundsException("Requested page number is out of bounds");
+            }
+            return leaveMapper.leavesToLeaveDTOsByPage(allLeavesOfApproverByPaging);
+		}else {
+			if((resourceId != null && !resourceId.equals(resourceEmail)) || approverId != null) {
+				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");
+			}
+			
+			Page<Leave> allLeavesByPaging = leaveRepository.getAllLeavesByPaging(status, resourceEmail, null, startDate, endDate,pageable);
+			if(pageable.getPageNumber() >= allLeavesByPaging.getTotalPages()) {
+				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");
+			}
+			return leaveMapper.leavesToLeaveDTOsByPage(allLeavesByPaging);
+		}
+		
+		
+		
 	}
 
 

@@ -18,6 +18,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.finstack.assist.leave.exception.LeaveApproveException;
 import com.finstack.assist.leave.exception.LeaveSeekerIsApproverException;
+import com.finstack.assist.leave.exception.PageOutOfBoundsException;
 import com.finstack.assist.leave.exception.TrishankuException;
 import com.finstack.assist.leave.exception.UnauthorizedException;
 
@@ -26,6 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 @ControllerAdvice
 @Slf4j
 public class ExceptionAspect {
+	
+	@ExceptionHandler(PageOutOfBoundsException.class)
+	public ResponseEntity<TrishankuException> unauthorizedException(PageOutOfBoundsException ex){
+		return new ResponseEntity<>(new TrishankuException(new Date(), ex.getMessage(), ex.getLocalizedMessage()),HttpStatus.UNAUTHORIZED);
+	}
 	@ExceptionHandler(UnauthorizedException.class)
 	public ResponseEntity<TrishankuException> unauthorizedException(UnauthorizedException ex){
 		return new ResponseEntity<>(new TrishankuException(new Date(), ex.getMessage(), ex.getLocalizedMessage()),HttpStatus.UNAUTHORIZED);

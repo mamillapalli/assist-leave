@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,30 +60,33 @@ public class LeaveController {
 	 * HttpStatus.OK); }
 	 */
    
-    @CrossOrigin(origins = "http://localhost:8001/leaves")
-    @GetMapping (path = "/leaves")
-    public ResponseEntity<List<LeaveDTO>> getLeaves(@RequestParam(name = "status",required = false) StatusEnum status,
-    		@RequestParam(name = "resourceId",required = false) String resourceId,
-    		@RequestParam(name = "approverId",required = false) String approverId,
-    		@RequestParam(name = "startDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-			@RequestParam(name = "endDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate){
-    	
-
-        return new ResponseEntity<>(leaveService.getAll(status,resourceId,approverId,startDate,endDate), HttpStatus.OK);
-    }
+//    @CrossOrigin(origins = "http://localhost:8001/leaves")
+//    @GetMapping (path = "/leaves")
+//    public ResponseEntity<List<LeaveDTO>> getLeaves(@RequestParam(name = "status",required = false) StatusEnum status,
+//    		@RequestParam(name = "resourceId",required = false) String resourceId,
+//    		@RequestParam(name = "approverId",required = false) String approverId,
+//    		@RequestParam(name = "startDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+//			@RequestParam(name = "endDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate){
+//    	
+//
+//        return new ResponseEntity<>(leaveService.getAll(status,resourceId,approverId,startDate,endDate), HttpStatus.OK);
+//    }
     
     @CrossOrigin(origins = "http://localhost:8001/leaves")
-    @GetMapping (path = "/leaves/{page}/{pageSize}")
+    @GetMapping (path = "/leaves")
     public ResponseEntity<Page<LeaveDTO>> getLeavesByPaging(@RequestParam(name = "status",required = false) StatusEnum status,
     		@RequestParam(name = "resourceId",required = false) String resourceId,
     		@RequestParam(name = "approverId",required = false) String approverId,
     		@RequestParam(name = "startDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
 			@RequestParam(name = "endDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-			@PathVariable(name = "page") int page,
-			@PathVariable(name = "pageSize") int pageSize){
+			Pageable pageable
+//			@PathVariable(name = "page") int page,
+//			@PathVariable(name = "pageSize") int pageSize
+			){
     	
 
-        return new ResponseEntity<>(leaveService.getAllLeavesByPaging(status,resourceId,approverId,startDate,endDate,page, pageSize), HttpStatus.OK);
+       // return new ResponseEntity<>(leaveService.getAllLeavesByPaging(status,resourceId,approverId,startDate,endDate,page, pageSize), HttpStatus.OK);
+				 return new ResponseEntity<>(leaveService.getAllLeavesByPaging(status,resourceId,approverId,startDate,endDate,pageable), HttpStatus.OK);
     }
 
 

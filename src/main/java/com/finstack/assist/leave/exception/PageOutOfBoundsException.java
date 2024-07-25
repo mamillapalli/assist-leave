@@ -1,0 +1,8 @@
+package com.finstack.assist.leave.exception;
+
+
+public class PageOutOfBoundsException extends RuntimeException {
+    public PageOutOfBoundsException(String message) {
+        super(message);
+    }
+}
