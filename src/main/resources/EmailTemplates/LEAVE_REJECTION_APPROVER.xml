@@ -2,7 +2,7 @@
 <root>
     <toAddress><![CDATA[<%resourceId%>]]></toAddress>
     <ccAddress><![CDATA[ravikanthm@gmail.com]]></ccAddress>
-    <bccAddress><![CDATA[ravikanthm@gmail.com]]></bccAddress>
+    <bccAddress><![CDATA[raghu.doddla@gmail.com]]></bccAddress>
     <mailSubject><![CDATA[Leave Application Rejection Notification for <%leaveSeekerName%>]]></mailSubject>
     <fromAddress/>
     <mailContent><![CDATA[Dear <%approverName%>,

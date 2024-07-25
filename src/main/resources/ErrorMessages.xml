@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messages>
+    <message key="unauthorized.resource">Resource is not authorized to make the request</message>
+    <message key="unauthorized.leave">Leave applicant should not be a colleague</message>
+</messages>

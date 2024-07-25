@@ -156,6 +156,7 @@ public class LeaveServiceImpl implements LeaveService {
     		rolesList.add(role.getName());
     	});
     	System.out.println("rolesList -"+rolesList);
+    	//validate for leave_admin too?
     	if(rolesList == null || !rolesList.contains("LEAVE_APPROVER")) {
     		throw new UnauthorizedException("Approver does not have LEAVE_APPROVER role");
     	}
@@ -164,12 +165,14 @@ public class LeaveServiceImpl implements LeaveService {
     	if(leaveDTO.getResourceId().equals(leaveDTO.getApproverId()))
     		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
     	
-    	//colleague validation (should be available user)
     	Resource colleague = resourceService.findByEmail(leaveDTO.getColleagueEmail());
     	if(colleague == null) {
-    		System.out.println("Colleague is not existed");
     		throw new ResourceNotFoundException("Colleague is not existed");
     	}
+
+    	if(leaveDTO.getStartDate().isBefore(LocalDate.now())) throw new UnauthorizedException("Leave start date should not before the current date");
+
+    	if (leaveDTO.getEndDate().isBefore(leaveDTO.getStartDate())) throw new UnauthorizedException("Leave end date should not before the leave start date");
     	
         Leave leave = leaveMapper.leaveDTOToLeave(leaveDTO);
         leave.setStatus(StatusEnum.WAITING);
@@ -210,9 +213,28 @@ public class LeaveServiceImpl implements LeaveService {
         	throw new UnauthorizedException("Resource is not Authorized to make the request");
         }
         
+        Resource approverResource = resourceService.findByEmail(leaveDTO.getApproverId());
+    	List<Role> approverRoles = approverResource.getRoles();
+    	List<String> rolesList=new ArrayList<String>();
+    	approverRoles.forEach(role->{
+    		rolesList.add(role.getName());
+    	});
+    	if(rolesList == null || !rolesList.contains("LEAVE_APPROVER")) {
+    		throw new UnauthorizedException("Approver does not have LEAVE_APPROVER role");
+    	}
+    	
+    	leaveDTO.setApproverName(approverResource.getFirstName());
+    	leaveDTO.setLeaveSeekerName(resourceService.findByEmail(resourceEmail).getFirstName());
+        
         if(leaveDTO.getColleagueEmail().equals(leaveDTO.getResourceId())){
     		throw new UnauthorizedException("Leave appliar should not be a Colleague");
     	}
+        
+    	Resource colleague = resourceService.findByEmail(leaveDTO.getColleagueEmail());
+    	if(colleague == null) {
+    		throw new ResourceNotFoundException("Colleague is not existed");
+    	}
+        
         leave.setStatus(StatusEnum.WAITING);
         leave.setTransactionStatus(TransactionStatusEnum.PENDING);
         leave.setContactPhone(leaveDTO.getContactPhone());
@@ -224,7 +246,9 @@ public class LeaveServiceImpl implements LeaveService {
         leave.setColleagueEmail(leaveDTO.getColleagueEmail());
         leave.setColleagueName(leaveDTO.getColleagueName());
         
-        
+        if(leaveDTO.getStartDate().isBefore(LocalDate.now())) throw new UnauthorizedException("Leave start date should not before the current date");
+
+    	if (leaveDTO.getEndDate().isBefore(leaveDTO.getStartDate())) throw new UnauthorizedException("Leave end date should not before the leave start date");
         
         if(!leaveDTO.getStartDate().isEqual(leave.getStartDate()) || !leaveDTO.getEndDate().isEqual(leave.getEndDate())) {
         leaveDTO.setPreviousStartDate(leave.getStartDate());
@@ -397,14 +421,11 @@ public class LeaveServiceImpl implements LeaveService {
 		
 		String resourceEmail = jwtUtil.extractUsernameFromRequest();
 		String rolesFromRequest = jwtUtil.extractRolesFromRequest();
-		System.out.println("~~~~rolesFromRequest - "+rolesFromRequest);
 		List<String> rolesList = Arrays.asList(rolesFromRequest.split(","));
 		// empty check
-		//if(status != null && status.isBlank()) status = null;
 		if(resourceId != null && resourceId.isBlank()) resourceId = null;
 		if(approverId != null && approverId.isBlank()) approverId = null;
 
-		System.out.println("___ args :" +status+"\t"+resourceId+"\t"+approverId+"\t"+startDate+"\t"+endDate);
 		if(rolesList.contains("LEAVE_ADMIN")) {
 			return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeaves(status,resourceId,approverId,startDate, endDate));
 		}else if(rolesList.contains("LEAVE_APPROVER")) {
@@ -428,7 +449,7 @@ public class LeaveServiceImpl implements LeaveService {
             approverId = resourceEmail;
             return leaveMapper.leaveToLeaveDTOs(leaveRepository.getAllLeavesOfApprover(status, resourceId, approverId, startDate, endDate));
 		}else {
-			if(resourceId != null && !resourceId.equals(resourceEmail)) {
+			if(resourceId != null && !resourceId.equals(resourceEmail) || approverId != null ) {
 				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");
 			}
 			
@@ -441,17 +462,11 @@ public class LeaveServiceImpl implements LeaveService {
 	@Override
 	public Page<LeaveDTO> getAllLeavesByPaging(StatusEnum status, String resourceId, String approverId,
 			LocalDate startDate, LocalDate endDate, int page, int pageSize) {
-		
 
-		//Date sDate = startDate == null ? null : Date.valueOf(startDate);
-		//Date eDate = endDate == null ? null : Date.valueOf(endDate);
-		
 		String resourceEmail = jwtUtil.extractUsernameFromRequest();
 		String rolesFromRequest = jwtUtil.extractRolesFromRequest();
-		System.out.println("~~~~rolesFromRequest - "+rolesFromRequest);
 		List<String> rolesList = Arrays.asList(rolesFromRequest.split(","));
 		// empty check
-		//if(status != null && status.isBlank()) status = null;
 		if(resourceId != null && resourceId.isBlank()) resourceId = null;
 		if(approverId != null && approverId.isBlank()) approverId = null;
 
@@ -482,7 +497,7 @@ public class LeaveServiceImpl implements LeaveService {
             approverId = resourceEmail;
             return leaveMapper.leavesToLeaveDTOsByPage(leaveRepository.getAllLeavesOfApproverByPaging(status, resourceId, approverId, startDate, endDate,PageRequest.of(page, pageSize)));
 		}else {
-			if(resourceId != null && !resourceId.equals(resourceEmail) || approverId != null) {
+			if((resourceId != null && !resourceId.equals(resourceEmail)) || approverId != null) {
 				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");
 			}
 			

@@ -146,12 +146,14 @@ public class LeaveController {
     @PutMapping(path = "/leaves/{id}")
     public ResponseEntity<LeaveDTO> updateLeave(@Valid @RequestBody LeaveDTO leaveDTO, @PathVariable (name = "id") int id)
     {
-        String resourceEmail = leaveDTO.getResourceId();
-        String approverEmail = leaveDTO.getApproverId();
-        Resource seeker = resourceService.findByEmail(resourceEmail);
-        Resource approver = resourceService.findByEmail(approverEmail);
-        leaveDTO.setLeaveSeekerName(seeker.getFirstName());
-        leaveDTO.setApproverName(approver.getFirstName());
+		/*
+		 * String resourceEmail = leaveDTO.getResourceId(); String approverEmail =
+		 * leaveDTO.getApproverId(); Resource seeker =
+		 * resourceService.findByEmail(resourceEmail); Resource approver =
+		 * resourceService.findByEmail(approverEmail);
+		 * leaveDTO.setLeaveSeekerName(seeker.getFirstName());
+		 * leaveDTO.setApproverName(approver.getFirstName());
+		 */
         return new ResponseEntity<>(leaveService.updateLeave(id,leaveDTO),HttpStatus.ACCEPTED);
     }
 
