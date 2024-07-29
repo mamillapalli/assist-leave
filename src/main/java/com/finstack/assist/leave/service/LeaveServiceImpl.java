@@ -311,11 +311,15 @@ public class LeaveServiceImpl implements LeaveService {
     	Leave existingLeaveDetails =leaveRepository.findById(leaveId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + leaveId + " not found"));
     	
     	String jwtUserEmail = jwtUtil.extractUsernameFromRequest();
+    	String rolesFromRequest = jwtUtil.extractRolesFromRequest();
+    	List<String> rolesList = Arrays.asList(rolesFromRequest.split(","));
+    	
     	if(existingLeaveDetails.getResourceId().equals(jwtUserEmail))
     		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
         
-    	if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId())) {
-    		throw new LeaveApproveException(jwtUserEmail, leaveDTO.getApproverId());
+    	if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId()) || !rolesList.contains("LEAVE_ADMIN")) {
+    		//throw new LeaveApproveException(jwtUserEmail, leaveDTO.getApproverId());
+        	throw new UnauthorizedException("The resource is neither  Approver nor Leave Admin");
     	}
 
         existingLeaveDetails.setAuthorizationDetails(jwtUserEmail);
@@ -342,12 +346,15 @@ public class LeaveServiceImpl implements LeaveService {
    	Leave existingLeaveDetails =leaveRepository.findById(leaveId).orElseThrow(() -> new ResourceNotFoundException("Leave wit id -> " + leaveId + " not found"));
     	
     	String jwtUserEmail = jwtUtil.extractUsernameFromRequest();
+    	String rolesFromRequest = jwtUtil.extractRolesFromRequest();
+    	List<String> rolesList = Arrays.asList(rolesFromRequest.split(","));
+    	
     	if(existingLeaveDetails.getResourceId().equals(jwtUserEmail))
     		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
         
         
-        if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId())) {
-        	throw new UnauthorizedException("The resource is not the Approver");
+        if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId()) || !rolesList.contains("LEAVE_ADMIN")) {
+        	throw new UnauthorizedException("The resource is neither  Approver nor Leave Admin");
         }
         	
         existingLeaveDetails.setAuthorizationDetails(jwtUtil.extractUsernameFromRequest());
@@ -565,7 +572,7 @@ public class LeaveServiceImpl implements LeaveService {
 			
 			Page<Leave> allLeavesByPaging = leaveRepository.getAllLeavesByPaging(status, resourceEmail, null, startDate, endDate,pageable);
 			if(pageable.getPageNumber() >= allLeavesByPaging.getTotalPages()) {
-				throw new UnauthorizedException("Resource is not Authorized to make the requesgt");
+				throw new UnauthorizedException("Requested page number is out of bounds");
 			}
 			return leaveMapper.leavesToLeaveDTOsByPage(allLeavesByPaging);
 		}

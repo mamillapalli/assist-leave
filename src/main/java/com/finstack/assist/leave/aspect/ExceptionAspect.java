@@ -30,7 +30,7 @@ public class ExceptionAspect {
 	
 	@ExceptionHandler(PageOutOfBoundsException.class)
 	public ResponseEntity<TrishankuException> unauthorizedException(PageOutOfBoundsException ex){
-		return new ResponseEntity<>(new TrishankuException(new Date(), ex.getMessage(), ex.getLocalizedMessage()),HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(new TrishankuException(new Date(), ex.getMessage(), ex.getLocalizedMessage()),HttpStatus.BAD_REQUEST);
 	}
 	@ExceptionHandler(UnauthorizedException.class)
 	public ResponseEntity<TrishankuException> unauthorizedException(UnauthorizedException ex){
