@@ -317,7 +317,7 @@ public class LeaveServiceImpl implements LeaveService {
     	if(existingLeaveDetails.getResourceId().equals(jwtUserEmail))
     		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
         
-    	if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId()) || !rolesList.contains("LEAVE_ADMIN")) {
+    	if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId()) && !rolesList.contains("LEAVE_ADMIN")) {
     		//throw new LeaveApproveException(jwtUserEmail, leaveDTO.getApproverId());
         	throw new UnauthorizedException("The resource is neither  Approver nor Leave Admin");
     	}
@@ -353,7 +353,7 @@ public class LeaveServiceImpl implements LeaveService {
     		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
         
         
-        if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId()) || !rolesList.contains("LEAVE_ADMIN")) {
+        if(!jwtUserEmail.equals(existingLeaveDetails.getApproverId()) && !rolesList.contains("LEAVE_ADMIN")) {
         	throw new UnauthorizedException("The resource is neither  Approver nor Leave Admin");
         }
         	
