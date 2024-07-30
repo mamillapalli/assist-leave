@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,11 +80,11 @@ public class LeaveController {
     		@RequestParam(name = "approverId",required = false) String approverId,
     		@RequestParam(name = "startDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
 			@RequestParam(name = "endDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+			@PageableDefault(page = 0, value = Integer.MAX_VALUE)
 			Pageable pageable
 //			@PathVariable(name = "page") int page,
 //			@PathVariable(name = "pageSize") int pageSize
 			){
-    	
 
        // return new ResponseEntity<>(leaveService.getAllLeavesByPaging(status,resourceId,approverId,startDate,endDate,page, pageSize), HttpStatus.OK);
 				 return new ResponseEntity<>(leaveService.getAllLeavesByPaging(status,resourceId,approverId,startDate,endDate,pageable), HttpStatus.OK);

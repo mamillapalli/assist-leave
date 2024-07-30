@@ -521,7 +521,6 @@ public class LeaveServiceImpl implements LeaveService {
 	public Page<LeaveDTO> getAllLeavesByPaging(StatusEnum status, String resourceId, String approverId,
 			LocalDate startDate, LocalDate endDate, Pageable pageable) {
 		
-		
 		String resourceEmail = jwtUtil.extractUsernameFromRequest();
 		String rolesFromRequest = jwtUtil.extractRolesFromRequest();
 		List<String> rolesList = Arrays.asList(rolesFromRequest.split(","));
