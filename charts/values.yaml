@@ -1,0 +1,138 @@
+# Default values for iedi-claim-api-intake.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: iedibootstrapcentralus836e416d.azurecr.io/edi-claim-prepay-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""   
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podIdentity:
+  enabled: true
+  bindingName: "iedi-pod-identity-binding"
+
+podAnnotations: {}
+
+podSecurityContext: 
+  {}
+  # fsGroup: 2000
+
+securityContext: 
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 500m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 2Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+ #targetMemoryUtilizationPercentage: 80
+
+nodeSelector: 
+  agentpool: "iediapipool1"
+
+tolerations: []
+
+affinity: {}
+
+namespace: iedi-apis
+
+environment: man
+
+appEnv:
+  javaOpts: "-Xmx1600m -Xms1600m -XX:+UseParallelGC"
+  webClient:
+     maxConnection: "2000"
+     maxIdleTime: "30"
+     maxLifeTime: "240"
+     pendingAcquireTimeout: "30"
+     connectionTimeout: "240000"
+     responseTimeout: "240"
+     readTimeout: "240"
+     writeTimeout: "240"
+  logging:
+    milestoneEventhubName: iedi-commons-logging
+    milestoneBatchSize: 255
+    milestonePartialBatchPublishDuration: 555
+    askId: UHGWM110-024375
+    appName: "Claim Prepay API EDI Cloud"
+    deviceVendor: Optum
+    deviceProduct: IEDI
+    splunk:
+      messageFormat: json
+      index: iedi_nonprod
+      url: https://splunk.o360.cloud
+  appSettings:
+    storageAccountName: iediinternalstorageman
+    batchCount: 5
+    blobEndpoint: https://iediinternalstorageman.blob.core.windows.net/
+    sleepTime: 1
+    oipdiUrl: "https://oipdiapi-dev.optum.com/Claims/OIPDIPrePayClaims"
+  eventhub:
+    eventTopic: claim-persistence
+    oipdiEventTopic: oipdi-response-persistence
+    consumerGroup: "$Default"
+  postgres:
+    db: "iedidb"
+security:
+  requestAuthentication:
+    jwtRules:
+      issuer: "https://idx.linkhealth.com/auth/realms/developer-platform"
+      audiences:
+        - ace-pcg-test
+        - iedi-pcg-test
+        - iedi-pcg-test-client
+        - professional-json-test
+        - institutional-json-test
+      forwardOriginalToken: true
+  authPolicy:
+    frontdoorId: "51d67b0e-8098-49ec-ae29-118dab24e8f1"
+    claimIssuer: "https://idx.linkhealth.com/auth/realms/developer-platform"
+    extAuthService: "iedi-ext-authz-grpc"
+
+keyVaultName: iedi-kv-man
+resourceGroup: iedi-rg-man
+subscriptionId: 836e416d-3298-4cd8-9fba-6c3f913612fd
+tenantId: db05faca-c82a-4b9d-b9c5-0f64b6755421
+managedIdentityId: 351367d8-2e63-4592-b178-3adc0fa0f962
+serviceFQDN: edi-claim-prepay-api-svc-man.iedi-apis.svc.cluster.local
+host: "edi-test.iedi-nonprod.o360.cloud"
+gateway: "default/iedi-aks-gateway"
