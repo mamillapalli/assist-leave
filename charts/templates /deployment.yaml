@@ -1,0 +1,200 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "edi-claim-prepay-api.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "edi-claim-prepay-api.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "edi-claim-prepay-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "edi-claim-prepay-api.selectorLabels" . | nindent 8 }}
+        {{- if .Values.podIdentity.enabled }}
+        aadpodidbinding: {{ required "podIdentity.bindingName is required" .Values.podIdentity.bindingName }}
+        {{- end }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "false"
+    spec:
+      dnsConfig:
+       options:
+         - name: ndots
+           value: "1"
+      containers:
+        - name: {{ include "edi-claim-prepay-api.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+        # livenessProbe:
+           # httpGet:
+           # path: /health-check
+           # initialDelaySeconds: 60
+           # failureThreshold: 5
+           # periodSeconds: 10
+           # timeoutSeconds: 5
+          readinessProbe:
+             exec:
+              command:
+                - "wget"
+                - "-qO-"
+                - "http://localhost:8080/edi/oipdi/health-check"
+             initialDelaySeconds: 10
+             failureThreshold: 10
+             periodSeconds: 10
+             timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:          
+            - name: iedi_environment
+              value: {{ .Values.environment }}
+            - name: JAVA_OPTS
+              value: {{ .Values.appEnv.javaOpts }}
+            - name: MILESTONE_EVENTHUB_CONNECTIONSTRING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "edi-claim-prepay-api.name" . }}-secret-kv
+                  key: MILESTONE_EVENTHUB_CONNECTIONSTRING
+            - name: MILESTONE_EVENTHUB_NAME
+              value: {{ .Values.appEnv.logging.milestoneEventhubName }}
+            - name: MILESTONEEVENT_BATCHSIZE
+              value: {{ .Values.appEnv.logging.milestoneBatchSize | quote }}
+            - name: MILESTONEEVENT_PARTIALBATCH_PUBLISH_DURATION
+              value: {{ .Values.appEnv.logging.milestonePartialBatchPublishDuration | quote }}
+            - name: SPLUNK_SOURCE
+              value: {{ include "edi-claim-prepay-api.fullname" . }}
+            - name: SPLUNK_SOURCE_TYPE
+              value: "aks-service-{{ .Values.environment }}"
+            - name: SPLUNK_MESSAGE_FORMAT
+              value: {{ .Values.appEnv.logging.splunk.messageFormat }}
+            - name: SPLUNK_INDEX
+              value: {{ .Values.appEnv.logging.splunk.index }}
+            - name: SPLUNK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "edi-claim-prepay-api.name" . }}-secret-kv
+                  key: SPLUNK_TOKEN
+            - name: SPLUNK_URL
+              value: {{ .Values.appEnv.logging.splunk.url }}
+            - name: COMPUTERNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: WEBSITE_PRIVATE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SPLUNK_OTEL_AGENT
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://$(SPLUNK_OTEL_AGENT):4317"
+            - name: OTEL_SERVICE_NAME
+              value: {{ include "edi-claim-prepay-api.fullname" . }}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "deployment.environment=iedi-{{ .Values.environment }}"
+            - name: ASK_ID
+              value: {{ .Values.appEnv.logging.askId }}
+            - name: APPLICATION_NAME
+              value: {{ .Values.appEnv.logging.appName }}
+            - name: DEVICE_VENDOR
+              value: {{ .Values.appEnv.logging.deviceVendor }}
+            - name: DEVICE_PRODUCT
+              value: {{ .Values.appEnv.logging.deviceProduct }}
+            - name: STORAGE_ACCOUNT_NAME
+              value: {{ .Values.appEnv.appSettings.storageAccountName }}
+            - name: SLEEP_TIME
+              value: {{ .Values.appEnv.appSettings.sleepTime | quote }}  
+            - name: BLOB_ENDPOINT
+              value: {{ .Values.appEnv.appSettings.blobEndpoint }}
+            - name: OIPDI_URL
+              value: {{ .Values.appEnv.appSettings.oipdiUrl }}
+            - name: MAX_CONNECTIONS
+              value: {{ .Values.appEnv.webClient.maxConnection | quote }}
+            - name: MAX_IDLE_TIME
+              value: {{ .Values.appEnv.webClient.maxIdleTime | quote }}
+            - name: MAX_LIFE_TIME
+              value: {{ .Values.appEnv.webClient.maxLifeTime | quote }}
+            - name: PENDING_ACQUIRE_TIMEOUT
+              value: {{ .Values.appEnv.webClient.pendingAcquireTimeout | quote }}
+            - name: CONNECT_TIMEOUT_MILLIS
+              value: {{ .Values.appEnv.webClient.connectionTimeout | quote }}
+            - name: RESPONSE_TIMEOUT
+              value: {{ .Values.appEnv.webClient.responseTimeout | quote }}
+            - name: READ_TIMEOUT
+              value: {{ .Values.appEnv.webClient.readTimeout | quote }}
+            - name: WRITE_TIMEOUT
+              value: {{ .Values.appEnv.webClient.writeTimeout | quote }}
+            - name: BATCH_COUNT
+              value: {{ .Values.appEnv.appSettings.batchCount | quote }}
+            - name: IEDI_INTERNAL_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "edi-claim-prepay-api.name" . }}-secret-kv
+                  key: IEDI_INTERNAL_STORAGE_CONNECTION_STRING      
+            - name: IEDI_CLAIM_PERSISTENCE_EVENTHUB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "edi-claim-prepay-api.name" . }}-secret-kv
+                  key: IEDI_CLAIM_PERSISTENCE_EVENTHUB_CONNECTION_STRING 
+            - name: IEDI_OIPDI_RESPONSE_PERSISTENCE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "edi-claim-prepay-api.name" . }}-secret-kv
+                  key: IEDI_OIPDI_RESPONSE_PERSISTENCE_CONNECTION_STRING          
+            - name: IEDI_CLAIM_PERSISTENCE_TOPIC_NAME
+              value: {{ .Values.appEnv.eventhub.eventTopic }}
+            - name: OIPDI_RESPONSE_PERSISTENCE_TOPIC
+              value: {{ .Values.appEnv.eventhub.oipdiEventTopic }}              
+            - name: EVENTHUB_CONSUMER_GROUP
+              value: {{ .Values.appEnv.eventhub.consumerGroup }}
+            - name: MANAGED_IDENTITY_ID
+              value: {{ .Values.managedIdentityId }}
+            - name: RESOURCE_GROUP
+              value: {{ .Values.resourceGroup }}
+            - name: AZURE_SUBSCRIPTION_ID
+              value: {{ .Values.subscriptionId }}
+            - name: AZURE_TENANT_ID
+              value: {{ .Values.tenantId }}
+            - name: AZURE_CLIENT_ID
+              value: {{ .Values.managedIdentityId }}
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - mountPath: "/mnt/secrets-store"
+              name: secrets-store-inline
+              readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "edi-claim-prepay-api.name" . }}-secret-provider-kv
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
