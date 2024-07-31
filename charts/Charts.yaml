@@ -1,5 +1,5 @@
 apiVersion: v2
-name: edi-claim-prepay-api
+name: assist-leave
 description: A Helm chart for claim prepay Rest API Services
 
 # A chart can be either an 'application' or a 'library' chart.
