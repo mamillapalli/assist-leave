@@ -3,6 +3,9 @@ package com.finstack.assist.leave.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.finstack.assist.leave.entity.StatusEnum;
@@ -20,26 +23,38 @@ import lombok.NoArgsConstructor;
  
 public class LeaveDTO {
     private int id;
-    private String name;
+    //private String name;
+    @NotBlank(message = "Should not be blank")
+    private String leaveType;
+   // @NotBlank("leave description should not be blank")
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" ,timezone = "Asia/Dubai")
+    @NotNull(message = "should not be null")
     private LocalDate startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" ,timezone = "Asia/Dubai")
+    @NotNull(message = "should not be null")
     private LocalDate endDate;
     private int numberOfDays;
     private int payPercentage;
+    @NotBlank(message = "should not be blank")
     private String resourceId;
+    @NotBlank(message = "should not be blank")
     private String approverId;
     private List<ApproverDTO> approver;
+    @NotBlank(message = "should not be blank")
     private String contactAddress;
+    @NotBlank(message = "should not be blank")
     private String contactPhone;
     private boolean ticketsPaid;
     private String ticketsTo;
     private StatusEnum status;
     private String approverComments;
     private boolean deleteFlag;
+    @NotBlank(message = "should not be blank")
     private String colleagueName;
+    @NotBlank(message = "should not be blank")
     private String colleagueEmail;
+    @NotBlank(message = "should not be blank")
     private String colleagueContact;
     private TransactionStatusEnum transactionStatus;
     

@@ -36,7 +36,7 @@ public class  Leave extends Base {
     @Column(name="LEAVE_ID")
     private int id;
     @Column(name = "LEAVE_NAME")
-    private String name;
+    private String leaveType;
     @Column (name ="DESCRIPTION")
     private String description;
     @Column(name = "START_DATE", columnDefinition = "DATE")

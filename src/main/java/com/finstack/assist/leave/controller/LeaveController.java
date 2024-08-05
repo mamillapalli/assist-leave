@@ -80,7 +80,7 @@ public class LeaveController {
     		@RequestParam(name = "approverId",required = false) String approverId,
     		@RequestParam(name = "startDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
 			@RequestParam(name = "endDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-			@PageableDefault(page = 0, value = Integer.MAX_VALUE)
+//			@PageableDefault(page = 0, value = Integer.MAX_VALUE)
 			Pageable pageable
 //			@PathVariable(name = "page") int page,
 //			@PathVariable(name = "pageSize") int pageSize
