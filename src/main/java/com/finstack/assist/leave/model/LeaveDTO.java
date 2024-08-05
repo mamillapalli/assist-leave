@@ -26,7 +26,7 @@ public class LeaveDTO {
     //private String name;
     @NotBlank(message = "Should not be blank")
     private String leaveType;
-   // @NotBlank("leave description should not be blank")
+    @NotBlank(message = "should not be blank")
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" ,timezone = "Asia/Dubai")
     @NotNull(message = "should not be null")
