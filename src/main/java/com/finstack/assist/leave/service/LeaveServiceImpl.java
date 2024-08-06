@@ -243,7 +243,7 @@ public class LeaveServiceImpl implements LeaveService {
         //leave.setNumberOfDays(leaveDTO.getNumberOfDays());
         
         leave.setPayPercentage(leaveDTO.getPayPercentage());
-        leave.setTicketsPaid(leaveDTO.isTicketsPaid());
+        //leave.setTicketsPaid(leaveDTO.isTicketsPaid());
         leave.setColleagueContact(leaveDTO.getColleagueContact());
         leave.setColleagueEmail(leaveDTO.getColleagueEmail());
         leave.setColleagueName(leaveDTO.getColleagueName());
@@ -274,6 +274,11 @@ public class LeaveServiceImpl implements LeaveService {
         leaveDTO.setTransactionStatus(leave.getTransactionStatus());
         leaveDTO.setNumberOfDays(leave.getNumberOfDays());
         
+        leave.setContactAddress(leaveDTO.getContactAddress());
+        leave.setLeaveType(leaveDTO.getLeaveType());
+        leave.setApproverId(leaveDTO.getApproverId());
+        leave.setTicketsPaid(leaveDTO.isTicketsPaid());
+        leave.setTicketsTo(leaveDTO.getTicketsTo());
         
         
         leaveRepository.save(leave);
