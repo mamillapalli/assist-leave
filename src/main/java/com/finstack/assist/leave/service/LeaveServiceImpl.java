@@ -224,6 +224,8 @@ public class LeaveServiceImpl implements LeaveService {
     	if(rolesList == null || !rolesList.contains("LEAVE_APPROVER")) {
     		throw new UnauthorizedException("Approver does not have LEAVE_APPROVER role");
     	}
+    	if(leaveDTO.getResourceId().equals(leaveDTO.getApproverId()))
+    		throw new LeaveSeekerIsApproverException(leaveDTO.getLeaveSeekerName(), leaveDTO.getApproverName());
     	
     	leaveDTO.setApproverName(approverResource.getFirstName());
     	leaveDTO.setLeaveSeekerName(resourceService.findByEmail(resourceEmail).getFirstName());
