@@ -261,7 +261,7 @@ public class LeaveServiceImpl implements LeaveService {
         leave.setEndDate(leaveDTO.getEndDate());
         }else {
         	leaveDTO.setPreviousStartDate(leaveDTO.getStartDate());
-        	leaveDTO.setPreviousEndDate(leaveDTO.getPreviousEndDate());
+        	leaveDTO.setPreviousEndDate(leaveDTO.getEndDate());
         }
         
         
