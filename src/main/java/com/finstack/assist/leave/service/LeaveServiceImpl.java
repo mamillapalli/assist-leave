@@ -259,12 +259,17 @@ public class LeaveServiceImpl implements LeaveService {
         leave.setStartDate(leaveDTO.getStartDate());
         leaveDTO.setPreviousEndDate(leave.getEndDate());
         leave.setEndDate(leaveDTO.getEndDate());
+        }else {
+        	leaveDTO.setPreviousStartDate(leaveDTO.getStartDate());
+        	leaveDTO.setPreviousEndDate(leaveDTO.getPreviousEndDate());
         }
         
         
         if(!leaveDTO.getDescription().equals(leave.getDescription())) {
         leaveDTO.setPreviousDescription(leave.getDescription());
         leave.setDescription(leaveDTO.getDescription());
+        }else {
+        	leaveDTO.setPreviousDescription(leaveDTO.getDescription());	
         }
         
         int prevLeaves = leave.getNumberOfDays();
