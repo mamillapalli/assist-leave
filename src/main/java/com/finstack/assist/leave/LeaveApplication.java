@@ -24,8 +24,6 @@ public class LeaveApplication {
         SpringApplication.run(LeaveApplication.class, args);
     }
     
-    
-
 @Bean
 public OpenAPI myOpenAPI() {
 	Contact contact = new Contact();

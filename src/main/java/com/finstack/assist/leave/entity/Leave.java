@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,8 +32,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class  Leave extends Base {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+	 @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "leave_seq")
+    @SequenceGenerator(name = "leave_seq", sequenceName = "LEAVE_SEQ", allocationSize = 1)
     @Column(name="LEAVE_ID")
     private int id;
     @Column(name = "LEAVE_NAME")
